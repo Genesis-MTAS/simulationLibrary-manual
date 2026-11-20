@@ -1,0 +1,67 @@
+site_name: MTAS Simulation
+site_description: Source-verified MTAS decay-scheme simulation and response documentation
+strict: false
+nav:
+  - Overview: index.md
+  - Practical guides:
+      - Choose a task: guides/StartHere.md
+      - Install and verify: guides/Installation.md
+      - New campaign (production v1.1): guides/NewCampaign.md
+      - Choose and review configuration: guides/ConfigureCampaign.md
+      - Check NERSC jobs and campaign status: guides/CheckingJobs.md
+      - Generate decay schemes: guides/GenerateSchemes.md
+      - Simulate from decay XML: guides/SimulateFromXML.md
+      - Sort existing EventInfo files: guides/SortExistingEvents.md
+      - Prepare contaminants: guides/Contaminants.md
+      - Finalize physical and ML ROOT: guides/FinalizePhysicalAndML.md
+      - Create decay-scheme matrix: guides/CreateDecayMatrix.md
+      - Run a campaign today: guides/CampaignToday.md
+      - Inspect outputs: guides/InspectOutputs.md
+      - Validation workflow: guides/ValidationWorkflow.md
+      - Restart and recovery: guides/Recovery.md
+      - Storage and archiving: guides/StorageAndArchiving.md
+      - Campaign lifecycle and directory layout: guides/CampaignLifecycle.md
+      - NERSC and scaling: guides/NERSCAndScaling.md
+      - Packed workers: guides/PackedWorkers.md
+      - Performance and storage: guides/PerformanceAndStorage.md
+      - 100k campaign operator guide: guides/Production100k.md
+      - Editing, hosting, and MkDocs: guides/PublishingAndMkDocs.md
+  - Program reference:
+      - GenerateDecaySchemes: programs/GenerateDecaySchemes.md
+      - GenerateResponse: programs/GenerateResponse.md
+      - SortResponse: programs/SortResponse.md
+      - CleanPhysicalResponse: programs/CleanPhysicalResponse.md
+      - PreprocessResponse: programs/PreprocessResponse.md
+      - GenerateDecaySchemeMatrix: programs/GenerateDecaySchemeMatrix.md
+      - Campaign driver: programs/CampaignDriver.md
+      - Production project controller and sharding: programs/ProductionProject.md
+  - Physics:
+      - Scheme generation: physics/DecaySchemeGeneration.md
+      - Beta spectra: physics/BetaSpectra.md
+      - Response libraries and binary formats: physics/ResponseLibraries.md
+      - Detector processing: physics/DetectorProcessing.md
+      - "Pileup, zeros and event-wise 3350 (detailed)": physics/PileupDetailed.md
+      - Mixtures and pileup (overview): physics/MixturesAndPileup.md
+      - "Time evolution and Bateman development (detailed)": physics/TimeEvolutionDetailed.md
+      - Energy binning and time evolution (overview): physics/EnergyBinningAndTime.md
+      - "Normalization and ML reconstruction (detailed)": physics/NormalizationAndReconstruction.md
+      - Shared-log ML (overview): physics/SharedLog.md
+      - Decay-scheme matrix: physics/DecaySchemeMatrix.md
+  - Reference:
+      - Configuration options: reference/Configurations.md
+      - Configuration approval worksheet: reference/ProductionConfigurationReview.md
+      - Input formats and provenance: reference/LibraryAndInputs.md
+      - Output formats: reference/OutputFormats.md
+  - Development:
+      - Architecture: development/Architecture.md
+      - Source review findings: development/SourceReview.md
+      - Validation status: development/ValidationAndDocumentationStatus.md
+      - Production readiness: development/ProductionReadiness.md
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
