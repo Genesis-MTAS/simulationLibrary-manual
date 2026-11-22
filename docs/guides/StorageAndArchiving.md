@@ -1,18 +1,19 @@
 # NERSC working storage, quota monitoring and durable archiving
 
-Our MTAS data layout separates **shared software**, **shared prepared inputs**, and **independent campaigns**. The archive destination remains **undecided**: it may be NERSC CFS or another computer. The production workflow must not depend on the archive choice.
+Our MTAS data layout separates **shared software**, **shared prepared inputs**, and **independent campaigns**. CFS is the chosen destination for verified historical software, production-test bundles and reports. The full 100k dataset and active library still need verified durable copies; CFS/HPSS or another approved storage endpoint can be used.
 
 ## Directory policy
 
 ```text
 /global/common/software/gen0018/mtas/
   root-env/                      shared ROOT/Python environment
-  mtas-simulation/               one canonical software installation
+  mtas-simulation/               preserved historical v1.2.1
+  mtas-simulation-v1.2.2/         maintained software for new campaigns
 
 /global/cfs/cdirs/gen0018/MTAS/
   inputs/                        existing persistent/master input sources
   library/binary/                existing master response-library copy
-  # possible later archive, only after project-quota and retention review
+  archive/                       verified historical packages, tests and reports
 
 /pscratch/sd/m/michals/MTAS/
   library/binary/{electrons,gammas}/  ACTIVE 296-GiB response library
@@ -30,21 +31,67 @@ Our MTAS data layout separates **shared software**, **shared prepared inputs**, 
 
 ## Space and inode limits
 
-The operator's latest quota output was **20.00 TiB Scratch / 10 million inodes** and ~320.83 GiB used / 78.38K inodes used after the 512-case run. The budget is ample for the **observed** full 92Y+92Sr output shapes, but **not guaranteed** for any target or time range.
-
-Measurements from the successful 1024/512 full tests project roughly **1.1 TiB final plus metadata** and **~2.7 million inodes** for 100,000 similar cases. These are much better than extrapolating a single pilot's 54 objects/case. Filesystem objects include directories, not just ROOT files. This would use a significant fraction of the 10M quota; leave headroom for other work, background inputs, scripts, failed-case diagnostics and temporary operations.
+The reported Scratch quota was 20 TiB / 10 million inodes. The completed 100k run occupied about 1.2 TiB (measured with `du -h`); earlier tests projected ~2.7 million inodes, not a final measured inode count. Check current group CFS capacity and personal Scratch quotas separately. Leave headroom for simultaneous intermediates, input data and new cases.
 
 Check before, during and after production:
 
 ```bash
 showquota
-"$PY" "$TREE/scripts/production_project.py" status --run-dir "$RUN"
+"$PY" "$TREE/scripts/production_project.py" status --run-dir "$RUN"  # use the run's original tree
 # When the run is complete:
 "$PY" "$TREE/scripts/campaign_metrics.py" \
   --run-dir "$RUN" --require-complete --report-dir "$RUN/reports"
 ```
 
 For **small completed** runs `du -sh "$RUN"` and `find "$RUN" -xdev -type f | wc -l` can help. For 100,000 active case directories, avoid repeated unbounded filesystem traversals during heavy parallel writes; prefer existing campaign report data and periodic sampling.
+
+## Scratch retention and library completeness
+
+NERSC's [Scratch policy](https://docs.nersc.gov/filesystems/perlmutter-scratch/) says files not accessed for eight weeks (56 days) may be purged when the filesystem reaches its threshold. Eligibility is per file; this is not a guaranteed grace period after campaign completion. Scratch is not backed up. See [data policy](https://docs.nersc.gov/policies/data-policy/policy/) and [backups](https://docs.nersc.gov/filesystems/backups/). Do not use artificial reads or timestamp changes to evade purging. Check candidate and deletion records under `$SCRATCH/.purge/` (not exhaustive); archive important data regardless.
+
+Preflight verifies the active library root and electron/gamma directories, not every file. Binary readers check the opened records; `GenerateResponse --validate-only` does not load the library. The 92Y run cannot prove completeness at higher energies. A quick read-only check for the documented grid (10–1000 keV in 1-keV steps, 1010–10000 keV in 10-keV steps) compares names:
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+root = Path('/pscratch/sd/m/michals/MTAS/library/binary')
+energies = list(range(10, 1001)) + list(range(1010, 10001, 10))
+for folder, particle in [('electrons', 'Electron'), ('gammas', 'Gamma')]:
+    expected = {f'Pure_{particle}_{e}keV.mtasbin' for e in energies}
+    actual = {p.name for p in (root/folder).glob('*.mtasbin') if p.is_file()}
+    print(folder, 'expected', len(expected), 'present', len(actual))
+    print('missing:', sorted(expected-actual))
+    print('unexpected:', sorted(actual-expected))
+PY
+```
+
+Expected 1,891 per particle (3,782 total). Filename completeness is not a checksum; keep a durable master manifest and check sizes and headers after restoration. No standalone complete library audit is implemented in v1.2.2.
+
+## Actual archive layout
+
+```text
+/global/cfs/cdirs/gen0018/MTAS/archive/
+  software-history/
+    MTAS_legacy_patch_packages_Nov2026.tar.gz   # confirmed; 23 originals removed
+    MTAS_preconsolidation_sources_Nov2026.tar.gz # verify if second cleanup executed
+    home-packages/                              # verify if home ZIP cleanup executed
+  production-tests/
+    MTAS_pre100k_production_tests_Nov2026.tar.gz # confirmed 24 GiB; 7 originals removed
+    MTAS_pre100k_production_tests_Nov2026.tar.gz.sha256
+  production-reports/Production_100k_candidate_v1/
+    metrics/metrics.json
+    scaling/report.json
+    scaling/array_shards.csv
+    mtas_full_scaling_report.txt
+```
+
+Historical patch archive, production-test archive and reports are confirmed. Preconsolidation and home-package cleanup instructions were supplied but no completion log was reported. Verify their presence before relying on them. Neither the full 100k run nor library was archived by these operations.
+
+To recover an archive, verify its SHA-256 if provided, list contents with `tar -tzf`, then extract into a new writable recovery directory using `tar -xzf ARCHIVE -C DEST --no-same-owner`. Do not extract over active software or frozen runs. Stop jobs before archiving, compare original and archived content, check for additional unarchived files and live dependencies, then explicitly delete only verified originals. Archive symlinks do not include external targets: preserve the referenced master inputs. CFS is not an independent disaster backup; HPSS and/or another site should hold critical copies.
+
+## Read-only sharing with gen0018
+
+For the completed run, the owner configured group traversal on ancestors (group execute, no group write) and group read/traverse on the campaign tree. Setgid on new output parents gives group inheritance; v1.2.2 launchers set `umask 027`. Expected directory mode 2750, regular file mode 0640, group `gen0018`. Setgid does not change existing children. Set ownership and permissions on the intended project, run and output parents before submission; do not broaden permissions of unrelated directories. Verify with `namei -l` and `stat`, and ask a collaborator to open a representative file from their own account. Sampled production files had the correct group and read-only permissions; independent colleague confirmation was not reported. No recursive permission change is needed on the completed run. Older index verification rejected harmless ctime changes; v1.2.2 tolerates those while preserving SHA verification.
 
 ## Temporary outputs and peak storage
 

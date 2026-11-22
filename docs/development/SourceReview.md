@@ -1,3 +1,5 @@
+> **Historical record:** earlier source/benchmark review and then-current open questions. For current status see [production readiness](../development/ProductionReadiness.md) and [100k results](../guides/Production100k.md).
+
 **Current implementation addendum:** The code snapshot contains six scientific C++ applications; production orchestration comes from installed `MTAS_ProductionWorkflow_v1_1` and passed a real 512-case two-shard acceptance test. The available electron/gamma binary library ends at **10 MeV**, consistent with `GenerateResponse.cpp maxLibraryKeV=10000`; this is not a discrepancy. New physics reference chapters: [pileup](../physics/PileupDetailed.md), [time evolution and Bateman](../physics/TimeEvolutionDetailed.md), [normalization and ML inverse](../physics/NormalizationAndReconstruction.md).
 
 # Source-review findings, documentation v1

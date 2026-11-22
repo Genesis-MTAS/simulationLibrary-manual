@@ -1,40 +1,15 @@
-# NERSC runtime and scaling
+# NERSC execution and scaling
 
-## Known Perlmutter installation (site-specific example)
+Use `mtas` on login, then choose the versioned installation ([Installation](Installation.md)). Keep the runtime and binaries on Global Common, active response and output on Scratch, and durable input masters and verified archive bundles on CFS/HPSS. Global Common is read-only on compute nodes; submit with writable working directory and absolute log paths.
 
-- Canonical software: `/global/common/software/gen0018/mtas/mtas-simulation`.
-- ROOT: `/global/common/software/gen0018/mtas/root-env`.
-- Active electron/gamma MTASBIN library: `/pscratch/sd/m/michals/MTAS/library/binary/{electrons,gammas}` (1891 + 1891 files; ~296 GiB).
-- Crystal-resolved experimental background: `/pscratch/sd/m/michals/MTAS/inputs/backgrounds/background.mtasbkg`.
-- Permanent master copies and reference decay XML/corrections on CFS.
+The production controller creates one scheme job plus dependent independent one-node shard tasks. Perlmutter CPU nodes have 128 physical cores and 256 logical CPUs; the tested workload uses 256 workers per node and four successive waves of 256 cases in a 1,024-case shard. The scheme stage is separate. The controller checks allocated CPU count and affinity; do not oversubscribe. Worker count, shard size and node throttle are distinct.
 
-Do not copy the 296-GiB response library per case. Campaign initialization stages small configs and links/copies small input files; paths must be verified for each deployment.
+| Objective | Measured recommendation |
+|---|---|
+| Minimize allocated node-hours | 4 concurrent nodes |
+| High aggregate throughput | Up to 32 concurrent nodes; 16 intermediate |
+| New physics or altered event count | Small representative pilot and scale tests |
 
-## Pilot job and queue priority
+Use 1,024 cases/shard initially and 256 workers for the tested full workload. New settings are editable before freeze. After freeze, only scheduling throttle may be overridden using `scontrol update JobId=ARRAY ArrayTaskThrottle=N`; do not change case ranges. The scheduler may delay or stagger allocations. For explicit initial ranges and resume see [New campaign](NewCampaign.md).
 
-`sbatch` queues a job; `PD (Priority)` means it has not reached a schedulable priority and **does not indicate an MTAS executable failure**. NERSC explains that Slurm uses priority-ordered scheduling and backfill. Use:
-
-```bash
-squeue -j <jobid> -o '%.18i %.2t %.10P %.12q %.12Q %.35R'
-squeue --start -j <jobid>
-scontrol show job <jobid> | grep -E 'JobState=|Reason=|SubmitTime=|EligibleTime=|StartTime=|QOS=|TimeLimit='
-sprio -j <jobid>
-```
-
-`--start` may show `N/A`; estimates are not guarantees. Shorter **realistic** wall-time requests can increase backfill opportunities, but do not lower time limits so much that jobs will be killed. For queue behavior see NERSC documentation: https://docs.nersc.gov/jobs/ and https://docs.nersc.gov/jobs/scheduling/ .
-
-## Timing, memory and storage
-
-Read per-stage elapsed wall time from `scheme_status.json`, `response_status.json`, `clean_status.json`, `preprocess_status.json`, `validate_status.json`. For peak RSS and CPU usage, collect `/usr/bin/time -v` around compute jobs or Slurm `sacct` fields. Distinguish sum of *case CPU time* from overall *campaign makespan*, which includes Slurm waiting and concurrency effects. Count both file sizes and inodes; count only stored final physical/ML outputs, not temporary files removed by the schema-2 cleanup policy.
-
-### Scale-out progression
-
-1 verified one-case restart/deletion pilot → 16-case limited concurrency → 64 → 1024 with final validation of every case → decide on any optimization → complete documentation and configuration signoff → start validated first 100,000-case campaign → GitHub while production runs.
-
-Based on the first 92Y+92Sr pilot (`physical.root≈6.8MB`, `ml.root≈5.1MB`), 100,000 similarly sized cases would need ~1.19TB in final ROOT files **before** XML/logs and variability. This is an initial estimate only. The user-reported `showquota` on 2026-11-18 showed 20 TiB pscratch quota and 302.34 GiB used; these values may change. Scratch purging/backup limitations require a durable archiving plan.
-
-
-> **Updated production planning:** [Full configuration reference](../reference/Configurations.md) · [Configuration worksheet](../reference/ProductionConfigurationReview.md) · [100,000-case operations](../guides/Production100k.md) · [Readiness gaps](../development/ProductionReadiness.md).
-
-
-**For jobs submitted through Slurm:** see [Check NERSC job status](CheckingJobs.md) for `squeue`, `sacct`, pending reasons, array tasks and logs.
+The 100k campaign passed at 2, 4, 8, 16 and 32 nodes. Full measured table, cost, outliers and limitations: [Performance and storage](PerformanceAndStorage.md). Larger shard sizes and >32 nodes are untested. Do not use old 136I numbers to predict a full 92Y+92Sr campaign. Use [Checking jobs](CheckingJobs.md) for accounting and [Recovery](Recovery.md) for interrupted submissions. Historical single-node packed launcher documentation is retained at [Packed workers](PackedWorkers.md).

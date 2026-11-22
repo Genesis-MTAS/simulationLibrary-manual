@@ -3,7 +3,7 @@
 `GenerateDecaySchemeMatrix` reads a valid scheme and writes a normalized mathematical β-feeding × **first γ transition** probability matrix. This is independent of the response library, detector thresholds and contamination.
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
 "$TREE/bin/GenerateDecaySchemeMatrix" \
   /absolute/path/to/scheme/Decay.xml \
   /absolute/path/to/decay_matrix.root \

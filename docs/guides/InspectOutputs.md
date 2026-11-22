@@ -5,7 +5,7 @@
 For the installed production controller:
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2  # use original installation for old-run controller commands
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 export PROJECT=/pscratch/sd/m/michals/MTAS/production/MyCampaign
 export RUN="$PROJECT/runs/run_0001"

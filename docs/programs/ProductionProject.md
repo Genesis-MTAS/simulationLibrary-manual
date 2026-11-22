@@ -1,6 +1,6 @@
 # `production_project.py` and sharded execution
 
-**Installed version referenced:** `MTAS_ProductionWorkflow_v1_1`, staged into the canonical `mtas-simulation/scripts/` and tested on Perlmutter with the real two-node 512-case acceptance campaign. It is a control-plane tool; the underlying C++ physics algorithms remain unchanged.
+**Installed version referenced:** v1.2.2 maintenance, based on v1.2.1 used for the completed 100k run. Orchestration only; physics algorithms unchanged.
 
 ## Responsibilities
 
@@ -13,7 +13,7 @@
 | `create` | `--tree`, `--project-dir` | `--from-config DIR` | Create a *new* project with independent copies of 6 INIs; refuses an existing directory. |
 | `preflight` | `--tree`, `--project-dir` | — | Check configuration, paths, shard count, active Scratch library, contaminant files and resource syntax. |
 | `freeze` | `--tree`, `--project-dir` | `--run-id run_0001` | Create an immutable run; copy six INIs, stage inputs, snapshot SHA-256 of config and orchestration, define shards. |
-| `submit` | `--run-dir RUN` | `--dry-run` | `sbatch` for schemes and a dependent `--array 0-(nshards-1)%max_active_nodes` for shards; schemes-only produces no array. |
+| `submit` | `--run-dir RUN` | `--shards LIST`, `--dry-run` | `sbatch` for schemes and a dependent `--array 0-(nshards-1)%max_active_nodes` for selected shards; schemes-only produces no array. For ≥10,000 cases explicit initial selection is mandatory (except schemes-only). |
 | `status` | `--run-dir RUN` | — | Print scheme/shard status and failed IDs. |
 | `resume` | `--run-dir RUN`, `--shards LIST` | `--retry-failed`, `--dry-run` | Explicit retry of selected shards, excluding verified passed shards. |
 | `complete-submission` | `--run-dir RUN` | `--dry-run` | Resume a partially completed **submission**, not a scientific stage, without duplicating a scheme job. |
@@ -31,7 +31,7 @@
 
 If `cases=N` and `shard_size=S`, the controller generates `ceil(N/S)` consecutive **nonoverlapping** case ranges. An array task receives `SLURM_ARRAY_TASK_ID` and processes only its assigned range, with `workers=W<=256`. `max_active_nodes=M` caps simultaneously eligible array tasks using Slurm's `%M` throttle. `scheme_walltime` and `shard_walltime` are distinct Slurm limits, and their values should be chosen from measured real workloads.
 
-Example: `cases=100000`, `shard_size=512` → 196 shards; `workers=256`, `max_active_nodes=2` → at most 2 allocated CPU nodes with up to 512 simultaneous processes. This is a **resource plan**, not a throughput guarantee. Shared Scratch I/O contention currently under investigation, and the final 100k values have not been approved.
+Example: `cases=100000`, `shard_size=1024` → 98 shards (last 672 cases), `workers=256`, `max_active_nodes=4`. A runtime Slurm throttle override changes scheduling only; case ranges remain frozen. See [measured results](../guides/PerformanceAndStorage.md).
 
 ## Data integrity
 
@@ -49,6 +49,6 @@ PROJECT/runs/run_0001/cases/            per-case logs, stage statuses, ROOT outp
 PROJECT/runs/run_0001/reports/          campaign_metrics.py outputs
 ```
 
-Real Perlmutter acceptance: 512/512 full cases passed, two shards and no leaked intermediates. The **compute efficiency** of running two nodes concurrently was lower than the previous 1024-case one-node benchmark and requires controlled follow-up. Success in an orchestration test does not prove physics accuracy for a different nuclear target. Independent fixed-reference regression is still pending.
+Real production: all 100,000 cases passed with v1.2.1. v1.2.2 passed 30 Python tests and preserved modular tests on NERSC; live four-case acceptance is pending. Fixed-reference scientific validation remains separate.
 
 Related [operator guide](../guides/NewCampaign.md), [job status](../guides/CheckingJobs.md), [recovery](../guides/Recovery.md), [production planning](../guides/Production100k.md).

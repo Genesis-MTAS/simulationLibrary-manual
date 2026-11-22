@@ -194,7 +194,7 @@ The driver accepts command-line flags (not an INI). Its init-only values are fro
 
 `config/defaults/campaign_commands.json` contains **argv lists**, not shell command strings. Its supported expansion placeholders include `{tree}`, `{python}`, `{decay_xml}`, `{binary_library}`, `{sort_ini}`, `{pileup_ini}`, `{mixture_ini}`, `{preprocess_ini}`, `{central_root}`, `{intermediate_root}`, `{physical_root}`, `{ml_root}`, `{response_seed}`, `{smearing_seed}`, `{conditions_seed}`, `{mixture_seed}`, `{events}`, `{batch}`, `{case}`. `pileup_seed` is applied to the per-case `Pileup.ini`. The default command templates invoke `GenerateResponse --direct-sort`, `CleanPhysicalResponse`, `PreprocessResponse --decay-xml`, and `validate_case.py`.
 
-**Current supported per-project workflow (production v1.1):** use `production_project.py create` to copy **six** INIs from canonical defaults or a previous project. Edit them under `PROJECT/config/`, run `preflight`, and `freeze`. The production controller uses the extended `campaign_driver.py init --config-dir PROJECT/config`, stages the reviewed INIs into the frozen run, and records their SHA-256 hashes. **The canonical defaults are not live configuration files.** The older schema-2-only `campaign_driver.py init` remains useful for legacy campaigns. See [New campaign](../guides/NewCampaign.md).
+**Current supported per-project workflow (production v1.2.2):** use `production_project.py create` to copy **six** INIs from canonical defaults or a previous project. Edit them under `PROJECT/config/`, run `preflight`, and `freeze`. The production controller uses the extended `campaign_driver.py init --config-dir PROJECT/config`, stages the reviewed INIs into the frozen run, and records their SHA-256 hashes. **The canonical defaults are not live configuration files.** The older schema-2-only `campaign_driver.py init` remains useful for legacy campaigns. See [New campaign](../guides/NewCampaign.md).
 
 
 ## 7. Legacy single-node packed-worker launcher
@@ -208,9 +208,9 @@ The driver accepts command-line flags (not an INI). Its init-only values are fro
 
 These are presently source constants / interface constraints, **not INI keys**: `GenerateResponse.cpp` `minLibraryKeV=10`, `maxLibraryKeV=10000` (matching the currently available particle library), grid 1 keV up to 1000 and 10 keV above; raw SortEngine histogram range to 15000 keV; mixture and decay-matrix final axis 0–12000 keV; current fixed 354-bin time-axis structure. Histogram **creation versus saving** controls remain an agreed outstanding task: do not claim that every intermediate/internal histogram can presently be switched off independently.
 
-For reviewing these options before the 100,000-case run, use the [configuration decision worksheet](ProductionConfigurationReview.md). For execution readiness, use the [100k operations guide](../guides/Production100k.md).
+For reviewing these options before any new large run, use the [configuration decision worksheet](ProductionConfigurationReview.md). For execution readiness, use the [100k operations guide](../guides/Production100k.md).
 
-## 9. `Campaign.ini` (new projects, production controller v1.1)
+## 9. `Campaign.ini` (new projects, production controller v1.2.2)
 
 The controller parses `PROJECT/config/Campaign.ini`, independently copied from the software's default or a previous campaign. Frozen runs preserve the exact reviewed bytes, plus independent copies of the five scientific INIs. Unknown keys/sections fail validation; **do not add arbitrary keys and expect them to be ignored.**
 
@@ -227,9 +227,9 @@ The controller parses `PROJECT/config/Campaign.ini`, independently copied from t
 | `inputs.central_file` | blank | Existing absolute path to central correction ROOT. |
 | `execution.account` | `gen0018` | Slurm account; approved alphanumeric `-._` identifier. |
 | `execution.qos` | `regular` | Slurm QOS; verify availability on system before submit. |
-| `execution.workers` | `256` | Independent processes per CPU-node allocation, `1..256`. Provisional baseline, not guaranteed optimal. |
-| `execution.shard_size` | `512` | Consecutive disjoint cases per array task; >0; shard count ≤1000. |
-| `execution.max_active_nodes` | `2` | Maximum simultaneous shard allocations via Slurm array throttle, 1..1000. |
+| `execution.workers` | `256` | Independent processes per CPU-node allocation, `1..256`. Measured baseline for the full 92Y+92Sr workload, not guaranteed optimal. |
+| `execution.shard_size` | `1024` | Consecutive disjoint cases per array task; >0; shard count ≤1000. |
+| `execution.max_active_nodes` | `4` | Maximum simultaneous shard allocations via Slurm array throttle, 1..1000. |
 | `execution.scheme_walltime` | `00:20:00` | Slurm scheme job wall time, `HH:MM:SS` or `DD-HH:MM:SS`. |
 | `execution.shard_walltime` | `00:45:00` | Wall time per shard allocation, same syntax; determine from observed workload. |
 

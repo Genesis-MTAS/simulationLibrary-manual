@@ -1,6 +1,6 @@
 # Campaign lifecycle: editable project and frozen runs
 
-**Current implementation:** the tested v1.1 production controller supports this workflow. This is not merely a proposed design. Begin with the [hands-on new-campaign guide](NewCampaign.md); use this page for the conceptual lifecycle and data layout.
+**Current implementation:** the v1.2.2 production controller supports this workflow. This is not merely a proposed design. Begin with the [hands-on new-campaign guide](NewCampaign.md); use this page for the conceptual lifecycle and data layout.
 
 ## One scientific project, many frozen runs
 
@@ -34,7 +34,7 @@
         run_0002/                           # new freeze after a configuration edit
 ```
 
-The active binary library is on **Scratch**, not CFS; it is **referenced**, never copied into each campaign. Canonical software stays under `/global/common/software/gen0018/mtas/mtas-simulation`. Scratch is working storage subject to quota and purge; archive data to CFS or a separately chosen external machine after verified transfer.
+The active binary library is on **Scratch**, not CFS; it is **referenced**, never copied into each campaign. New software stays under `/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2`; historical runs retain their original installation. Scratch is working storage subject to quota and purge; archive data to CFS or a separately chosen external machine after verified transfer.
 
 ## Either configuration starting point is valid
 
@@ -54,7 +54,7 @@ Neither method leaves the new editable configuration linked to its source. Once 
 | `physical` | Generate response and final physical ROOT output; ML preprocessing not requested |
 | `full` | Generate response, clean physical, preprocess ML, validate, and remove the intermediate **only after validated completion** |
 
-Existing scheme-independent **standalone** tools are available for generating a response from one explicit `Decay.xml` or for sorting an existing `EventInfo` ROOT file. The v1.1 controller does **not** claim an independently supported `sort_existing_events` campaign scope, nor does a `response` scope imply automatic import of arbitrary existing XML collections. See [Simulate from XML](SimulateFromXML.md) and [Sort existing events](SortExistingEvents.md).
+Existing scheme-independent **standalone** tools are available for generating a response from one explicit `Decay.xml` or for sorting an existing `EventInfo` ROOT file. The v1.2.2 controller does **not** claim an independently supported `sort_existing_events` campaign scope, nor does a `response` scope imply automatic import of arbitrary existing XML collections. See [Simulate from XML](SimulateFromXML.md) and [Sort existing events](SortExistingEvents.md).
 
 ## Actual operator sequence
 
@@ -62,10 +62,10 @@ Existing scheme-independent **standalone** tools are available for generating a 
 2. **Edit** the six standalone INIs inside `PROJECT/config/` and review them against [configuration reference](../reference/Configurations.md).
 3. **Preflight**: `production_project.py preflight --tree TREE --project-dir PROJECT`. Structural PASS does **not** constitute physics approval.
 4. **Freeze**: `production_project.py freeze --tree TREE --project-dir PROJECT` creates `runs/run_NNNN` and records per-run inputs/configuration fingerprints.
-5. **Inspect**: `production_project.py submit --run-dir RUN --dry-run` shows exact `sbatch` commands and their dependencies.
-6. **Submit**: `production_project.py submit --run-dir RUN`. Schemes are generated once; a dependent bounded Slurm array runs disjoint numbered case shards, with a configurable worker pool per allocated node.
+5. **Inspect**: `production_project.py submit --run-dir RUN --dry-run` (add explicit `--shards` for large runs) shows exact `sbatch` commands and their dependencies.
+6. **Submit**: `production_project.py submit --run-dir RUN` (for at least 10,000 cases use `--shards 0-9` or another chosen initial range, except schemes-only). Schemes are generated once; a dependent bounded Slurm array runs disjoint numbered case shards, with a configurable worker pool per allocated node.
 7. **Monitor** using `production_project.py status --run-dir RUN` for scientific state, and `squeue`/`sacct` for Slurm job state. See [Checking NERSC job status](CheckingJobs.md).
 8. **Recover** particular failed shards with verified restart/`resume`; do not mutate successful outputs or frozen input files. See [Recovery](Recovery.md).
-9. **Report and archive** `RUN/reports/` plus final ROOT products, scheme XML and metadata. Use [Storage and archiving](StorageAndArchiving.md), choosing permanent destination later.
+9. **Report and archive** `RUN/reports/` plus final ROOT products, scheme XML and metadata. Use [Storage and archiving](StorageAndArchiving.md), using the documented CFS archive and a verified destination for the full dataset.
 
-Legacy schema-1 and schema-2 campaigns remain in their existing layouts and are **not automatically migrated**. The operator workflow is fully supported for new projects, but it still requires fixed-reference physics regression and an explicit per-campaign scientific review before the first 100,000-case run.
+Legacy schema-1 and schema-2 campaigns remain in their existing layouts and are **not automatically migrated**. The historical 100k production passed; every new target still requires scientific review. Fixed-reference physics regression remains separate from computational acceptance.

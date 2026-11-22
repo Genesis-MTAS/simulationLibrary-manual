@@ -1,3 +1,5 @@
+> **Historical record:** earlier source/benchmark review and then-current open questions. For current status see [production readiness](../development/ProductionReadiness.md) and [100k results](../guides/Production100k.md).
+
 # What has and has not been validated
 
 **Evidence as of November 19, 2026.** Keep scientific equivalence, campaign correctness, and throughput as distinct acceptance tests. This manual was reviewed against the November 18 canonical C++ source archive and the later production-controller v1.1 implementation. Changes to installed software should be checked against these references before claiming documentation applies.

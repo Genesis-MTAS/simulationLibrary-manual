@@ -6,7 +6,7 @@ nav:
   - Practical guides:
       - Choose a task: guides/StartHere.md
       - Install and verify: guides/Installation.md
-      - New campaign (production v1.1): guides/NewCampaign.md
+      - New campaign (production v1.2.2): guides/NewCampaign.md
       - Choose and review configuration: guides/ConfigureCampaign.md
       - Check NERSC jobs and campaign status: guides/CheckingJobs.md
       - Generate decay schemes: guides/GenerateSchemes.md
@@ -15,7 +15,7 @@ nav:
       - Prepare contaminants: guides/Contaminants.md
       - Finalize physical and ML ROOT: guides/FinalizePhysicalAndML.md
       - Create decay-scheme matrix: guides/CreateDecayMatrix.md
-      - Run a campaign today: guides/CampaignToday.md
+      - Historical schema-2 driver: guides/CampaignToday.md
       - Inspect outputs: guides/InspectOutputs.md
       - Validation workflow: guides/ValidationWorkflow.md
       - Restart and recovery: guides/Recovery.md
@@ -24,7 +24,7 @@ nav:
       - NERSC and scaling: guides/NERSCAndScaling.md
       - Packed workers: guides/PackedWorkers.md
       - Performance and storage: guides/PerformanceAndStorage.md
-      - 100k campaign operator guide: guides/Production100k.md
+      - Completed 100k campaign: guides/Production100k.md
       - Editing, hosting, and MkDocs: guides/PublishingAndMkDocs.md
   - Program reference:
       - GenerateDecaySchemes: programs/GenerateDecaySchemes.md

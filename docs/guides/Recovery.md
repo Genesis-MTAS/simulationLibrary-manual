@@ -5,7 +5,7 @@
 ## 1. Diagnose what failed
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2  # select original release for an older run
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 export RUN=/absolute/path/to/PROJECT/runs/run_0001
 
@@ -67,3 +67,9 @@ The editable files are `PROJECT/config/*.ini`; the frozen `RUN/config/` contains
 - treating the software's one-node `packed_campaign.py` as a multi-node sharding system.
 
 Related: [new campaign](NewCampaign.md), [job monitoring](CheckingJobs.md), [validation](ValidationWorkflow.md), [storage and archiving](StorageAndArchiving.md).
+
+## 7. Permission-only scheme index errors
+
+Old v1.2.1 may report `Indexed scheme metadata changed after creation` after chmod/chgrp. Do not regenerate schemes or bypass verification. The historical repair compared both SHA-256 hashes and all identity fields, accepted only ctime differences and backed up the descriptor. v1.2.2 ignores ctime in fast identity comparison; full hashes remain enforced. If an index content hash differs, stop and investigate. Preserve original historical executable and software paths.
+
+For any prior array, resume only after all recorded tasks are inactive and accounting confirms terminal states; an empty `squeue` is not enough. If accounting expired, investigate instead of clearing submission history.

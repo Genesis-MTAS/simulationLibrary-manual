@@ -1,3 +1,5 @@
+> **Historical record:** earlier source/benchmark review and then-current open questions. For current status see [production readiness](../development/ProductionReadiness.md) and [100k results](../guides/Production100k.md).
+
 **Compatibility note (production v1.1):** This page describes the historical schema-2 driver for existing pilots and benchmarks. For **new** projects use [Create a new campaign](NewCampaign.md); see [Job status](CheckingJobs.md). The new production controller already supports independent per-campaign INIs and sharded multi-node jobs.
 
 # Guide: run a schema-2 campaign with the currently installed driver

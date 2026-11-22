@@ -62,7 +62,7 @@ Press `Ctrl+C` to stop `tail`, **not** the Slurm job. Each case also has its own
 ## 5. Check **MTAS scientific progress**, not just scheduling
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2  # use original installation for old-run controller commands
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 "$PY" "$TREE/scripts/production_project.py" status --run-dir "$RUN"
 ```
@@ -107,3 +107,15 @@ showquota
 ## 8. Where every campaign guide should point
 
 After any `sbatch` or production `submit`, check `squeue`, `sacct`, `production_project.py status`, logs, and finally metrics. This chapter is linked from [new campaigns](NewCampaign.md), [100k run](Production100k.md), [scheme generation](GenerateSchemes.md), [standalone simulation](SimulateFromXML.md), [sorting](SortExistingEvents.md), and [recovery](Recovery.md).
+
+## 9. v1.2.2 reporting tools
+
+Use the original controller for historical run status. The maintained reporter can inspect older runs read-only.
+
+```bash
+python3 "$TREE/scripts/campaign_metrics.py" --run-dir "$RUN" --require-complete
+python3 "$TREE/scripts/campaign_metrics.py" --run-dir "$RUN" --require-complete --detailed
+python3 "$TREE/scripts/production_scaling_report.py" --run-dir "$RUN" --details --report-dir "$RUN/reports/scaling"
+```
+
+Default metrics is O(shards), not a recursive scan. Only add `--detailed --scan-storage` when exact storage accounting is required; on a 100k run this is costly. Slurm records have limited retention; archive report JSON and array CSV promptly. For maintenance builds specify absolute `--output="$HOME/name-%j.out"` and `--chdir="$HOME"` to avoid read-only Global Common.

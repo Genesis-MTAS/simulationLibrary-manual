@@ -27,7 +27,7 @@ This creates a `site/` folder containing HTML, CSS, JavaScript and the search in
 
 ## Always-available wiki-style hosting
 
-**GitHub Pages** is the simplest target if we publish `mtas-simulation` as a public GitHub repository. Once the repository exists, with Git configured and authenticated:
+**GitHub Pages** is already in use for the separate manual repository `Genesis-MTAS/simulationLibrary-manual`. The present v6 archive is a review draft; do not replace published material until it is approved. For a configured and authenticated repository, the general MkDocs deployment commands are:
 
 ```bash
 mkdocs build
@@ -38,7 +38,7 @@ mkdocs gh-deploy
 
 **Read the Docs** is another option, with builds triggered by repository updates and features for versioned manuals. It requires a hosted documentation project/repository integration, whereas GitHub Pages can be deployed directly from MkDocs. Both approaches keep the Markdown files authoritative.
 
-**Visibility and timing:** GitHub Pages for a public repository is available with GitHub Free. A site from a private repository may have different plan requirements and is not automatically private merely because the source repository is private. Do not publish scientific information, restricted data, credentials, or institution-specific internal details without reviewing access requirements. For now, the project can remain entirely local until the software and documentation are approved for release.
+**Visibility and timing:** GitHub Pages for a public repository is available with GitHub Free. A site from a private repository may have different plan requirements and is not automatically private merely because the source repository is private. Do not publish scientific information, restricted data, credentials, or institution-specific internal details without reviewing access requirements. Review v6 locally first; actual publication and source-repository export are a separate task.
 
 ## MkDocs configuration and links
 

@@ -1,6 +1,6 @@
 # Create, configure, freeze, and submit a campaign
 
-**This is the normal operator workflow for the installed production controller** `scripts/production_project.py` (**v1.1**, validated on Perlmutter with two 256-case shards on two nodes). It supersedes the earlier schema-2 `campaign_driver.py init` instructions for *new projects*. The schema-2 interface remains supported for older campaigns, which must not be modified or migrated in place.
+**This is the normal operator workflow for the installed production controller** `scripts/production_project.py` (**v1.2.2**, built and regression-tested on Perlmutter; the 100k campaign used v1.2.1). It supersedes the earlier schema-2 `campaign_driver.py init` instructions for *new projects*. The schema-2 interface remains supported for older campaigns, which must not be modified or migrated in place.
 
 ## The seven-step routine
 
@@ -14,13 +14,14 @@ The project can begin from **copied canonical defaults** or **copied configs fro
 ## 1. Define the installed software and working location
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+mtas  # see Installation.md for shell initialization
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
 export SCR=/pscratch/sd/m/michals/MTAS
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 export PROJECT="$SCR/production/MyCampaign"
 ```
 
-Use a unique project name and an existing parent directory. The shared **active** binary library resides under `$SCR/library/binary/{electrons,gammas}`; don't copy it into each project.
+Use a unique project name and an existing parent directory. Run the controller from a writable location (`cd "$HOME"`); `umask 027` is recommended. If sharing with collaborators, configure group ownership and setgid before submission (see [Storage and archiving](StorageAndArchiving.md)). The shared **active** binary library resides under `$SCR/library/binary/{electrons,gammas}`; don't copy it into each project.
 
 ## 2. Create from defaults OR an established project
 
@@ -62,7 +63,7 @@ Start with `Campaign.ini`:
 
 ```ini
 [campaign]
-cases = 512
+cases = 1024
 events = 1000000
 batch = 100000
 master_seed = 20261119
@@ -78,13 +79,13 @@ central_file = /global/cfs/cdirs/gen0018/MTAS/inputs/corrections/Sr90_Ratio_CC12
 account = gen0018
 qos = regular
 workers = 256
-shard_size = 256
-max_active_nodes = 2
-scheme_walltime = 00:10:00
-shard_walltime = 00:25:00
+shard_size = 1024
+max_active_nodes = 4
+scheme_walltime = 00:20:00
+shard_walltime = 00:45:00
 ```
 
-**This is an illustrative already-tested 92Y+92Sr acceptance configuration, not the approved 100k settings.** Use your target nuclear XML and appropriate corrections/contaminants. The specific production worker and node counts remain subject to performance investigation.
+**Example:** a 1,024-case full run, using the measured production shard size. The default no-contaminant Mixture.ini must be edited if a 92Sr contribution is intended. Review every scientific input and choose a fresh seed for independent datasets. Four concurrent nodes are the economical default for multiple shards; this example contains only one shard.
 
 `scope` currently supports:
 
@@ -134,6 +135,8 @@ runs/run_0001/
 
 ## 6. Review submission, then submit
 
+For fewer than 10,000 cases or a schemes-only run, the following example submits the entire requested scope. For larger response campaigns, use the explicit tranche commands below instead.
+
 ```bash
 "$PY" "$TREE/scripts/production_project.py" submit \
   --run-dir "$RUN" --dry-run
@@ -145,7 +148,35 @@ Review the Slurm account, QOS, scheme generation job, shard count, `--array` and
 "$PY" "$TREE/scripts/production_project.py" submit --run-dir "$RUN"
 ```
 
-Scheme generation runs **once**; every shard starts after it has succeeded. One array task maps to a **fixed disjoint case range** and runs up to `workers` independent processes on one CPU node; passed cases are verified and skipped on restart. A large campaign is one project/run from your perspective, even if Slurm schedules hundreds of array tasks.
+Scheme generation runs **once**; every shard starts after it has succeeded. The current shard launcher requests all 256 logical CPUs per node even if `workers` is smaller; a four-worker smoke test is not a four-CPU resource allocation. One array task maps to a **fixed disjoint case range** and runs up to `workers` independent processes on one CPU node; passed cases are verified and skipped on restart. A large campaign is one project/run from your perspective, even if Slurm schedules hundreds of array tasks.
+
+### Large campaigns: explicit initial selection and subsequent tranches
+
+For 10,000 or more cases (except `schemes` scope), the controller requires explicit `--shards` on initial submission. With 100,000 cases and 1,024 cases/shard there are 98 tasks, IDs 0–97; the last has 672 cases. Example:
+
+```bash
+"$PY" "$TREE/scripts/production_project.py" submit --run-dir "$RUN" --shards 0-9 --dry-run
+"$PY" "$TREE/scripts/production_project.py" submit --run-dir "$RUN" --shards 0-9
+```
+
+Wait for the scheme stage and current array to finish; verify passed shard IDs and Slurm exit codes. Then:
+
+```bash
+"$PY" "$TREE/scripts/production_project.py" resume --run-dir "$RUN" --shards 10-19 --dry-run
+"$PY" "$TREE/scripts/production_project.py" resume --run-dir "$RUN" --shards 10-19
+```
+
+Choose unsubmitted ranges until all are passed. To retry previously submitted failed tasks, diagnose first and add `--retry-failed`; the controller rejects active or passed tasks. See [Recovery](Recovery.md). The conservative guard requires prior arrays to be inactive, with complete accounting available. Do not submit overlapping tranches. An initial small submission may omit `--shards`; scheme-only mode must omit it.
+
+To change concurrency without changing the frozen scientific configuration, use the array ID printed by the controller (or inspect `RUN/jobs/submissions.jsonl`):
+
+```bash
+ARRAY=12345678  # replace with the actual new array ID
+scontrol update JobId="$ARRAY" ArrayTaskThrottle=32
+scontrol show job "$ARRAY" | grep -E 'ArrayTaskId|ArrayTaskThrottle|JobState'
+```
+
+This scheduling override does not change case IDs, seeds or shard size. Record the actual throttle and start/end overlap; it is not a guarantee of instantaneous node allocation. The next tranche again uses the frozen default until overridden. Do not edit the frozen INI to change concurrency. Select 4 for economy or test up to 32 for elapsed-time priority; see [measurements](PerformanceAndStorage.md).
 
 ## 7. Monitor, inspect, and recover
 
@@ -164,4 +195,4 @@ Use `campaign_metrics.py --require-complete` **after** all stages have passed; w
 - The software defaults are **references**, not live-linked configuration. A previous project's config is an equally valid starting source.
 - Keep intermediate ROOT only when the chosen scope needs it; for a validated full run automatic deletion is essential at 100,000 cases.
 - Do not launch several hand-built `packed_campaign.py` instances against one run. Use the tested production sharding controller.
-- An archive destination can be **CFS or another computer**. It is not chosen by this guide; make and verify a retention plan before relying on Scratch as the sole copy.
+- Archive reports and approved historical bundles under CFS `MTAS/archive/`; arrange a verified durable copy of valuable datasets and inputs before Scratch purge. See [storage and archiving](StorageAndArchiving.md).

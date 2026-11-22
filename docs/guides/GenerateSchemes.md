@@ -9,7 +9,7 @@ You need `GenerateDecaySchemes.ini`. It can reference an existing `Decay.xml` an
 **Recommended standalone working directory:** create a folder for a named project and a copy of the INI; never edit `config/defaults/GenerateDecaySchemes.ini` in place.
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
 export PROJECT=/pscratch/sd/m/michals/MTAS/production/scheme_study_example
 mkdir -p "$PROJECT/config" "$PROJECT/inputs"
 cp "$TREE/config/defaults/GenerateDecaySchemes.ini" "$PROJECT/config/"

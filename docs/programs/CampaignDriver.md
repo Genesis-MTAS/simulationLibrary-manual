@@ -1,4 +1,4 @@
-**Production-controller update (November 2026):** New projects should use the integrated `scripts/production_project.py` controller (`create → preflight → freeze → submit → status → resume`) and `scripts/production_shard.py`. It provides independent per-project INIs and bounded, nonoverlapping multi-node sharding; a real 512-case two-node acceptance campaign passed. The underlying `campaign_driver.py` remains the per-case stage engine and supports legacy schema-2 campaigns. See [the production project program reference](ProductionProject.md) and [new campaign guide](../guides/NewCampaign.md).
+**Production-controller update (November 2026):** New projects should use the integrated `scripts/production_project.py` controller (`create → preflight → freeze → submit → status → resume`) and `scripts/production_shard.py`. It provides independent per-project INIs and bounded, nonoverlapping multi-node sharding; the 512-case two-node acceptance and then the 100k v1.2.1 full campaign passed. The underlying `campaign_driver.py` remains the per-case stage engine and supports legacy schema-2 campaigns. See [the production project program reference](ProductionProject.md) and [new campaign guide](../guides/NewCampaign.md).
 
 # Campaign driver (`campaign_driver.py`)
 
@@ -41,13 +41,13 @@ All stages run as argv arrays (not through a shell) from `config/defaults/campai
 
 ## Slurm execution
 
-`jobs/campaign_pilot_1case.slurm` is the validated integration pattern. `jobs/campaign_case_array.slurm` supplies a per-case array entry point, but **scheme generation must finish successfully before starting case jobs**. Large-scale submission, queue latency, memory and file count should be measured before a 100,000-case run. See [operations](../guides/NERSCAndScaling.md).
+`jobs/campaign_pilot_1case.slurm` is the validated integration pattern. `jobs/campaign_case_array.slurm` supplies a per-case array entry point, but **scheme generation must finish successfully before starting case jobs**. For new large-scale production use the project controller; see the completed 100k scaling measurements. See [operations](../guides/NERSCAndScaling.md).
 
 ## Status and tests
 
 - Real schema-1 pilot: passed generator, response, cleaner, shared-log/matrix, validation; restart skipped all stages.
 - Step 3c: 14 local Python tests and a Perlmutter installation/restart check passed. Perlmutter schema-2 cleanup pilot subsequently completed: physical.root and ml.root retained, intermediate.root deleted after validation, and restart skipped all stages (operator logs).
-- Current driver is intentionally a practical orchestration layer, not a universal workflow service: absolute run paths are fixed, shared response library content is not exhaustively rehashed per case, and filesystem/scheduler scaling remains to be benchmarked.
+- Current driver is intentionally a practical orchestration layer, not a universal workflow service: absolute run paths are fixed, shared response library content is not exhaustively rehashed per case, and filesystem/scheduler scaling has been measured for the 92Y+92Sr workload; retest new workloads.
 
 ## Campaign storage, fingerprints and safe replay
 

@@ -21,7 +21,7 @@ The supplied `scripts/validate_case.py` checks the compact ROOT structures and m
 A simple standalone validation command for complete physical and ML files is:
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2  # use original installation for old-run controller commands
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 "$PY" "$TREE/scripts/validate_case.py" \
   --physical /absolute/path/to/physical.root \
@@ -39,6 +39,10 @@ The verified schema-2 one-case pilot demonstrated mathematical additivity and de
 
 For 16, 64 and 1,024 cases, record the **requested** case count, distinct completed case IDs, failure list, elapsed allocation time, stage timing percentiles, peak memory, node-hours, size distributions, inode consumption and deliberate restart test. The existing controlled ¹³⁶I comparison favored 256 workers per Perlmutter CPU node; confirm this under the current full workload rather than blindly reusing its throughput number.
 
-Before 100,000 cases, also rehearse an interrupted node/shard and its restart under the new multi-node scheduler. Validate that all completed cases are skipped, failed cases retain diagnostic intermediate files and no two workers can claim the same case.
+For future campaigns, consider rehearsing an interrupted node/shard and its restart under the new multi-node scheduler. Validate that all completed cases are skipped, failed cases retain diagnostic intermediate files and no two workers can claim the same case.
 
 See [current readiness](../development/ProductionReadiness.md), [performance and storage](PerformanceAndStorage.md), and [output reference](../reference/OutputFormats.md).
+
+## 5. Reasonable final integrity acceptance
+
+For the completed 100k dataset, all controller shards passed, zero failures/pending, successful Slurm tasks, full scheme-index verify, and a reproducible small sample of readable ROOTs were checked. Expected keys, finite histogram summaries and nonempty content are useful checks. The actual 32-file physical sample passed; 20 histograms each. These checks complement—not replace—the controller per-case validator. Do not reopen 100k ROOTs solely to repeat validated stages. A deeper scan or fixed-seed comparison is appropriate when investigating a discrepancy.

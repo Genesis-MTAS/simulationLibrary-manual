@@ -1,3 +1,5 @@
+> **Historical record:** earlier source/benchmark review and then-current open questions. For current status see [production readiness](../development/ProductionReadiness.md) and [100k results](../guides/Production100k.md).
+
 **Compatibility note:** This is the historical single-node packed launcher. For new multi-node projects use [Create a new campaign](NewCampaign.md) and the production shard controller, which is installed and was tested with 512 cases across two nodes. See [Job status](CheckingJobs.md).
 
 # Packed workers on a Perlmutter CPU node

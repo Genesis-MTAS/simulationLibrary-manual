@@ -2,7 +2,7 @@
 
 **Use this page with the actual source-controlled INIs and [complete parameter reference](Configurations.md) before starting a 100,000-case campaign.** This is a decision worksheet, **not an implicit recommendation to keep every current default**. Each item should be marked approved with its exact numerical value, a rationale, and—where it changes simulated physics—a small comparison/validation result. Version the final decision in the campaign directory (e.g. `config_review.md`/`config_review.json` with dated approval), and stage exactly those INI bytes at `init` time.
 
-The experiment/target for the first 100,000 cases has not been selected in this documentation snapshot. Do **not** silently inherit the 92Y + 92Sr pilot as the production scientific setup.
+The completed 100k campaign used 92Y + 92Sr. This worksheet is reusable for future targets: do not silently inherit its scientific setup. See [completed campaign](../guides/Production100k.md).
 
 ## Configuration starting point and versioning
 
@@ -11,7 +11,7 @@ Choose one starting source and document it:
 - [ ] **Canonical defaults** were copied to this project's editable `config/` directory (not linked).
 - [ ] **Previously approved configuration** was copied from project/run: `__________` (configs only; no old status/results/metadata).
 
-After copying, **all** settings must be reviewed, even when unchanged. Record the approved configuration bytes/hashes with the new run. The installed production controller v1.1 copies all six project INIs to an immutable run; freeze them and inspect `RUN/config/`. The separate historical schema-2 driver is retained for old campaigns. [Operator configuration guide](../guides/ConfigureCampaign.md).
+After copying, **all** settings must be reviewed, even when unchanged. Record the approved configuration bytes/hashes with the new run. The maintained production controller v1.2.2 copies all six project INIs to an immutable run; freeze them and inspect `RUN/config/`. The separate historical schema-2 driver is retained for old campaigns. [Operator configuration guide](../guides/ConfigureCampaign.md).
 
 ## A. Scientific inputs — decide before initialization
 
@@ -70,23 +70,23 @@ After copying, **all** settings must be reviewed, even when unchanged. Record th
 | ML width correction | 10 keV reference, both energy axes | [ ] Confirm density convention: ____ |
 | Shared log density | `D0=1`, same family scale for components | [ ] Verify reversibility and component scale: ____ |
 | Matrix | β feeding × first γ, normalized to 1, not log scaled | [ ] Validate on reference: ____ |
-| Histogram creation vs saving | Not yet separately configurable across pipeline | [ ] Decide if any new switches are required before first 100k run. |
+| Histogram creation vs saving | Not yet separately configurable across pipeline | [ ] Decide if any new switches are required before a future large run. |
 
 ## E. Execution policy and operational limits
 
 | Decision | Planned / measured | Action / evidence |
 |---|---|---|
-| Workers per CPU node | **256 provisional**, tested 136I 1024-case benchmark | [ ] Confirm current full-pipeline RSS and throughput at 256: ____ |
-| Multi-node sharding | Production v1.1 validated 2 × 256-case shards on two nodes | [ ] Approve shard size and simultaneous node count after performance control test. |
+| Workers per CPU node | **256**, measured in the full 92Y+92Sr campaign | [ ] Confirm current full-pipeline RSS and throughput at 256: ____ |
+| Multi-node sharding | v1.2.1 validated 100k cases across 2–32 nodes | [ ] Approve shard size and simultaneous node count using measured scaling guidance. |
 | Slurm time limit | Must derive from whole-shard wall data | [ ] Record limit + safety margin: ____ |
 | Restart and failed-shard policy | stage fingerprints and explicit `--retry-failed` | [ ] Rehearse interrupted job and no duplicate case writes. |
 | Scratch capacity | User-reported 20 TiB / 10M inodes | [ ] Recheck before launching, including competing usage. |
-| Output and metadata retention | ~1.11 TiB final ROOT; 1024/512-based ~2.7M inode projection | [ ] Measure 1024-case distribution and inode overhead. |
+| Output and metadata retention | ~1.2 TiB observed complete 100k run; earlier ~2.7M inode projection | [ ] Measure 1024-case distribution and inode overhead. |
 | Archival/replication | Scratch not permanent storage | [ ] Approve transfer/archive and purge-safe retention: ____ |
 | Science gate | fixed-reference regression; all stage checks | [ ] 1024-case validation approved: ____ |
 | Operating manual gate | dry-run on clean environment by user | [ ] Reproduce independent launch/monitor/restart instructions: ____ |
 
-**Implementation note:** Production controller v1.1 has now implemented independent `PROJECT/config` inputs and hash-frozen `RUN/config` snapshots. The 512-case two-node run verified this route in real Slurm execution. Remaining science approval and fixed-reference regression are separate tasks.
+**Implementation note:** Production controller v1.2.2 retains independent `PROJECT/config` inputs and hash-frozen `RUN/config` snapshots. The 512-case acceptance and completed 100k run verified this route in real Slurm execution. Remaining science approval and fixed-reference regression are separate tasks.
 
 
 ## Configuration change discipline
@@ -105,9 +105,9 @@ After copying, **all** settings must be reviewed, even when unchanged. Record th
 - [ ] Verified capacity (bytes and inodes), credentials/access, expected retention, transfer method and integrity checks.
 - [ ] Scheduled transfer / checkpoint plan approved *before* large-scale production to avoid depending on transient Scratch retention.
 
-The final storage choice is deliberately **not predetermined** by this manual. See [Storage and archiving](../guides/StorageAndArchiving.md).
+The CFS archive location for historical tests and reports is established; the destination for the full dataset must still be selected and verified. See [Storage and archiving](../guides/StorageAndArchiving.md).
 
-## Planned first scientific development after 100k starts
+## Planned scientific development after the completed 100k campaign
 
 - [ ] Implement Bateman chains, daughter grow-in and branching, as described in [Time evolution](../physics/TimeEvolutionDetailed.md). This is **not** a configuration switch in the present release.
 - [ ] Define and validate how integrated source fractions map to time-dependent daughter activities and S+S/S+B accidental coincidences.
