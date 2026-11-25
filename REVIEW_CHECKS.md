@@ -1,3 +1,14 @@
+# Additional v6.3 chapter review checks (November 25, 2026)
+
+- Verified both revised chapters against v1.2.3 sources: `GenerateDecaySchemes.cpp` SHA-256 `889ab065aa1f26f2ace49059f8b404d082850693975212594aa89774d78a360f` and `GenerateResponse.cpp` SHA-256 `07604a85e0957161395491cbfa233e60538a47113d80d2c077b778fa23c0a2e6`.
+- Generated comparative figures using the stated formulas and Qbeta = 3643 keV, daughter Z = 40, daughter excited level 934.49 keV from the supplied XML. For the β spectral calculations, reproduced the `ShapeFactor`, `LogEulerGammaProduct`, and `BetaDensity` source implementations in a standalone C++ program; evaluated 1-keV midpoint grids as `BetaSampler` does.
+- Checked the 92Y inferred shapes: 2− to 0+ is code 3; 2− to 2+ is code 1. Recorded mean energies before mapping to the electron library grid.
+- Gamma examples use a **hypothetical** 3325-keV level and clearly identify assumed eligible directly beta-fed destinations. Numerical example probabilities and partial-width fractions are model illustrations, not measured gamma intensities.
+- Checked added image references and static Markdown targets; no NERSC compilation or scientific ROOT replay was attempted.
+- The β-feeding chapter from the earlier v6.3 review remains byte-for-byte unchanged.
+
+---
+
 # Documentation checks for v6.3 (model-detail review)
 
 - Compared the detailed β/γ formulas and sampling constraints against **the v1.2.3 `GenerateDecaySchemes.cpp` source** (SHA-256 `889ab065aa1f26f2ace49059f8b404d082850693975212594aa89774d78a360f`) and its official default `GenerateDecaySchemes.ini` (SHA-256 `119e70f7d7d4f27e7f30a833b268f3cd109436db34b5f2ae2c1c33cff4129d37`).

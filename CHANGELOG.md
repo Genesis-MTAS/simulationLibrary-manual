@@ -1,3 +1,12 @@
+# v6.3 — gamma and beta-spectra chapter review update (November 25, 2026)
+
+- Reorganized the statistical γ-transition chapter around the actual generation tasks (branch count, eligible lower levels, energy-weighted destination selection, gamma-distributed partial widths, intensity normalization/pruning), with a numerical 92Zr-inspired example and **five** explanatory diagrams/figures (SVG + PNG). Kept experimental topology/intensity freeze and γ-only-level rules explicit.
+- Expanded the β− electron-spectrum chapter with the exact `GenerateResponse.cpp` calculation, including the relativistic Coulomb/Euler-product implementation, codes 0–4 of `ShapeFactor`, spin/parity inference, screening omission, midpoint integration and library-energy mapping. Added **four** figures (SVG + PNG), including 92Y spectra for ground-state and 934.49-keV feeding and a comparison of shape codes.
+- The β-feeding models chapter from the preceding review is **unchanged**. No source or INI was modified. The calculations in the new β-spectrum plots use the v1.2.3 C++ routines transcribed into a ROOT-independent calculation; 92Y endpoints and level labels follow the supplied XML.
+- The generated curves are pre-detector continuum spectra; they are not experiment or full simulation results. Full rendered MkDocs acceptance remains with the publisher.
+
+---
+
 # v6.3 review draft — November 25, 2026
 
 - Expanded the source-verified `GenerateDecaySchemes` physics into three technical chapters: **β-feeding models**, **γ-transition generation**, and **complete construction/validation/cascade statistics**; retained a concise overview.
