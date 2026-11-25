@@ -6,7 +6,7 @@ nav:
   - Practical guides:
       - Choose a task: guides/StartHere.md
       - Install and verify: guides/Installation.md
-      - New campaign (production v1.2.2): guides/NewCampaign.md
+      - New campaign (production v1.2.3): guides/NewCampaign.md
       - Choose and review configuration: guides/ConfigureCampaign.md
       - Check NERSC jobs and campaign status: guides/CheckingJobs.md
       - Generate decay schemes: guides/GenerateSchemes.md
@@ -36,7 +36,10 @@ nav:
       - Campaign driver: programs/CampaignDriver.md
       - Production project controller and sharding: programs/ProductionProject.md
   - Physics:
-      - Scheme generation: physics/DecaySchemeGeneration.md
+      - Scheme generation (overview): physics/DecaySchemeGeneration.md
+      - Beta-feeding models (detailed): physics/BetaFeedingModels.md
+      - Gamma-transition models (detailed): physics/GammaTransitionModels.md
+      - Scheme construction and validation: physics/DecaySchemeValidation.md
       - Beta spectra: physics/BetaSpectra.md
       - Response libraries and binary formats: physics/ResponseLibraries.md
       - Detector processing: physics/DetectorProcessing.md

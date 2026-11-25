@@ -1,6 +1,6 @@
 # MTAS Simulation — technical and operations manual
 
-**Review draft v6.2 — November 24, 2026.** New v1.2.3 release candidate changes only the handling of silicon-triggered, exactly zero-MTAS events as S+B primaries. The single-case real-data replay passed; this documentation includes installation steps, but successful promotion to Global Common must be verified separately on NERSC. Historical 100k v1.2.1 results and four-case v1.2.2 acceptance remain unchanged. Independent fixed-reference scientific validation remains separate.
+**Review draft v6.3 — November 25, 2026.** Adds source-verified detailed β-feeding and γ-transition model chapters for `GenerateDecaySchemes`; the v1.2.3 S+B zero-trigger patch and its passed single-case regression remain documented from v6.2. Installation of the separate v1.2.3 production tree was confirmed by the user, including six executable checksum checks. New full-controller acceptance is deferred. Historical 100k v1.2.1 results and four-case v1.2.2 acceptance remain unchanged; independent fixed-reference scientific validation is a separate task.
 
 ## Choose what to read
 
@@ -10,6 +10,7 @@
 | Understand every knob before a large run | [Configuration reference](reference/Configurations.md) and [approval worksheet](reference/ProductionConfigurationReview.md) |
 | See what's pending/running/failed in Slurm | [Checking jobs](guides/CheckingJobs.md) |
 | Generate decay schemes, simulate raw XML, sort existing ROOT | [Choose a task](guides/StartHere.md) |
+| Understand the statistical β and γ decay-scheme generation models | [β-feeding models](physics/BetaFeedingModels.md), [γ-transition models](physics/GammaTransitionModels.md) and [cascade validation](physics/DecaySchemeValidation.md) |
 | Understand exact S+S / S+B pileup, 3350, and zeros | [Pileup — full model](physics/PileupDetailed.md) |
 | Understand independent half-lives, S+S pair decay and daughter grow-in | [Time evolution and future Bateman model](physics/TimeEvolutionDetailed.md) |
 | Reconstruct a complete physical or ML spectrum from log-transformed components | [Normalization and reconstruction](physics/NormalizationAndReconstruction.md) |
@@ -61,4 +62,4 @@ The **first requested scientific feature in the subsequent development stage** i
 
 ## v1.2.3 S+B patch status (November 24, 2026)
 
-The new patch passes a one-case comparison against the completed 100k production run: ordinary main, S+S and 92Sr contaminant components are bin-identical; S+B shape is different; the S+B final `3300` fraction remains 0.753500%. β-triggered zero-MTAS events are included as virtual S+B primaries only. New Global Common installation and a fresh full-controller run are separate acceptance steps and should be recorded after they are actually completed. See [installation](guides/Installation.md) and [exact pileup physics](physics/PileupDetailed.md).
+The v1.2.3 patch passes a one-case comparison against the completed 100k production run: ordinary main, S+S and 92Sr contaminant components are bin-identical; S+B shape is different; the S+B final `3300` fraction remains 0.753500%. β-triggered zero-MTAS events are included as virtual S+B primaries only. The user confirmed successful installation into a separate Global Common v1.2.3 tree, including checksums for all six compiled executables; a new end-to-end full-controller campaign remains deferred. See [installation](guides/Installation.md) and [exact pileup physics](physics/PileupDetailed.md).

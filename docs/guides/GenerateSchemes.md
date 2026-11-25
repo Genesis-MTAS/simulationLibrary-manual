@@ -55,7 +55,7 @@ PROJECT/schemes/
 
 ## Key scientific choices
 
-Use [GenerateDecaySchemes program reference](../programs/GenerateDecaySchemes.md) and [config reference](../reference/Configurations.md) to review the trusted-level cutoff, inherited data preservation, β model, γ weighting and branch floor, gamma-only limits and number of requested variations. The default generator makes **one common skeleton and many variations**, not independent unrelated skeletons. If a variation cannot satisfy constraints after the configured attempts, the generator reports an error rather than relaxing constraints silently.
+Use [GenerateDecaySchemes program reference](../programs/GenerateDecaySchemes.md), [β-feeding models](../physics/BetaFeedingModels.md), [γ models](../physics/GammaTransitionModels.md), and [config reference](../reference/Configurations.md) to review the trusted-level cutoff, inherited data preservation, β model, γ weighting and branch floor, gamma-only limits and number of requested variations. The default generator makes **one common skeleton and many variations**, not independent unrelated skeletons. If a variation cannot satisfy constraints after the configured attempts, the generator reports an error rather than relaxing constraints silently.
 
 ## Driver alternative
 

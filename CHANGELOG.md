@@ -1,3 +1,14 @@
+# v6.3 review draft — November 25, 2026
+
+- Expanded the source-verified `GenerateDecaySchemes` physics into three technical chapters: **β-feeding models**, **γ-transition generation**, and **complete construction/validation/cascade statistics**; retained a concise overview.
+- Documented the exact allowed β phase-space midpoint integral, model-dependent active-feeding fraction laws, level-selection powers, Gaussian clustering prior, gamma-distributed β strengths and iterative positive-intensity floor.
+- Documented γ destination eligibility (ground or lower *directly β-fed* levels unless frozen/forced), the lack of a topology-frozen/intensity-only variation mode, broadened-Poisson outgoing counts, `E_gamma^3 exp(-E_gamma / scale)` weighting, Porter–Thomas-like widths, weak-γ pruning, and the inherited/forced γ-only cascade rules.
+- Added exact dynamic-programming formulae for γ multiplicity, γ-only event fractions, path counting, 64-bit per-variation seed derivation, validation tolerances and XML reachability pruning.
+- Verified the model descriptions against v1.2.3 `src/apps/GenerateDecaySchemes.cpp` (SHA-256 `889ab065aa1f26f2ace49059f8b404d082850693975212594aa89774d78a360f`) and its default INI; **no simulation source code or statistical parameters were changed**.
+- Updated manual navigation and links to the new model sections. Also recorded the confirmed v1.2.3 installation status in the overview; separate full-controller acceptance remains deferred.
+
+---
+
 # v6.2 — November 24, 2026
 
 - Documented the v1.2.3 S+B zero-trigger **physics change**: silicon-triggered events with processed total MTAS energy exactly zero are eligible only as the first S+B member. Main, contaminants, and S+S remain unchanged. S+B source selection and within-source sampling use the true zero/positive β-trigger counts without storing a large zero-event reservoir.

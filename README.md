@@ -1,6 +1,6 @@
-# MTAS simulation manual — physics and operations v6.2
+# MTAS simulation manual — physics and operations v6.3
 
-Review draft v6.2, 24 November 2026. Includes the scoped v1.2.3 S+B zero-MTAS beta-trigger patch, its passed single-case replay against the completed v1.2.1 100k dataset, and a guarded new-directory deployment procedure. Supersedes v6.1; prior v1.2.1 and v1.2.2 observations remain historical, not v1.2.3 benchmarks. Start at [manual overview](docs/index.md), [installation](docs/guides/Installation.md), [new campaign](docs/guides/NewCampaign.md), [scaling](docs/guides/PerformanceAndStorage.md), [storage](docs/guides/StorageAndArchiving.md).
+Review draft v6.3, 25 November 2026. Includes the previously validated v1.2.3 S+B zero-trigger physics and installation guidance; adds full source-verified β-feeding, γ-transition, and cascade-validation chapters. Supersedes v6.2; prior v1.2.1 and v1.2.2 observations remain historical, not v1.2.3 benchmarks. Start at [manual overview](docs/index.md), [installation](docs/guides/Installation.md), [new campaign](docs/guides/NewCampaign.md), [scaling](docs/guides/PerformanceAndStorage.md), [storage](docs/guides/StorageAndArchiving.md).
 
 ## Preview
 

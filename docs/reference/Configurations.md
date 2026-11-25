@@ -41,7 +41,7 @@ The generator builds **one common level skeleton**, then attempts randomized var
 |---|---|---|
 | `beta.model` | `mixed` | `mixed`, `sparse_statistical`, `phase_space_weighted`, `clustered`. |
 | `beta.fed_fraction_mode` | `model_dependent` | `model_dependent` or `uniform`; affects target fed-level fraction. |
-| `beta.fed_fraction_min`, `beta.fed_fraction_max` | `0.10`, `0.50` | Fractions of all beta-accessible skeleton levels; require 0 < min ≤ max ≤ 1. |
+| `beta.fed_fraction_min`, `beta.fed_fraction_max` | `0.10`, `0.50` | Applied to the **full skeleton size**, including ground and protected levels; the final active fraction can exceed the draw after mandatory promotions. Require 0 < min ≤ max ≤ 1. |
 | `beta.min_fed_levels` | `1` | Minimum beta-fed level count, ≥1. |
 | `beta.max_fed_levels` | `0` | Optional upper count; zero = no additional cap; mandatory known levels take priority. |
 | `beta.min_intensity_percent` | `0.01` | Lower positive β branch intensity in **percent**, allowed 0–100. Zero feeding for non-fed levels remains possible. |
@@ -49,13 +49,15 @@ The generator builds **one common level skeleton**, then attempts randomized var
 | `gamma.min_branch_intensity_percent` | `1.0` | Positive minimum generated γ branch intensity in **percent**, 0 < value ≤ 100. |
 | `gamma.max_outgoing_branches_per_level` | `15` | Maximum generated outgoing branches per level; 1–100. |
 | `gamma.energy_scale_keV` | `1000` | Energy scale in approximate statistical strength weighting `Eγ³ exp(-Eγ/scale)`, >0. |
-| `gamma.mean_outgoing_branches` | `3` | Statistical expected count of outgoing transitions, 1–100. |
+| `gamma.mean_outgoing_branches` | `3` | Scale of the broadened-Poisson candidate branch-count prior (not the exact final mean), 1–100. |
 | `gamma.resample_destinations_each_variation` | `true` | Currently required to be `true`. |
 | `gamma.resample_branching_each_variation` | `true` | Currently required to be `true`. |
 | `gamma.validate_multiplicity_distribution` | `true` | Calculate multiplicity statistics and write `multiplicity.csv` (if enabled). |
 | `gamma_only.probability_per_variation` | `0.30` | Probability of introducing 1 to max new γ-only-fed excited levels when allowed; 0–1. |
 | `gamma_only.max_levels` | `2` | Maximum random γ-only-fed levels; nonnegative. |
 | `gamma_only.max_cascade_fraction` | `0.10` | Maximum fraction of β cascades passing through ≥1 γ-only-fed level, 0–1 (not sum of populations). |
+
+For exact model equations and source-level sampling order, see [β feeding](../physics/BetaFeedingModels.md), [γ transitions](../physics/GammaTransitionModels.md) and [scheme validation and multiplicity](../physics/DecaySchemeValidation.md). In particular, generated ordinary γ destinations require *direct β feeding* or ground state; the model is **not** a fully connected downward γ graph.
 
 **Production review:** resolve trusted level boundary, generator β/γ randomization assumptions, sample count, and whether the existing 92Y-like skeleton setup matches the planned target. These settings determine the scientific training distribution, not merely performance.
 

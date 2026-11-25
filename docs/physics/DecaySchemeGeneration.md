@@ -1,25 +1,31 @@
-# Randomized decay-scheme model
+# Randomized decay-scheme model — overview
 
-**Implemented in:** `src/apps/GenerateDecaySchemes.cpp` (`LoadScheme`, `CompleteSkeleton`, `PhaseSpace`, `OneVariation`, `WriteVariation`).
+**Implemented in:** MTAS Simulation Library v1.2.3, `src/apps/GenerateDecaySchemes.cpp`. **Reviewed source SHA-256:** `889ab065aa1f26f2ace49059f8b404d082850693975212594aa89774d78a360f`.
 
-The generator creates one fixed level-energy skeleton per run and resamples β feeding and γ decay networks over that skeleton. It is deliberately a **phenomenological coarse-grained ensemble generator**, not a quantum-number-constrained microscopic nuclear-structure calculation.
+`GenerateDecaySchemes` builds **one fixed excitation-energy skeleton** and many randomized β− feeding and γ de-excitation schemes on that skeleton. It is a **phenomenological coarse-grained ensemble generator**, not a microscopic nuclear-structure model or a fitted evaluation of transition probabilities.
 
-## Known levels and added quasilevels
+For the complete equations and selection rules, use these dedicated chapters:
 
-Known levels in the trusted region are preserved. The highest retained level governs the start of added bins, regardless of the numeric cutoff if a level lies below it. In the default 354-bin MTAS grid, available higher-energy bin centers become candidate effective levels. Known levels may share a bin; the one-per-bin rule applies to added quasilevels. Only physically reachable levels are exported in each daughter XML.
+| Chapter | Questions answered |
+|---|---|
+| **[β-feeding models — full implementation](BetaFeedingModels.md)** | How is the β-fed fraction chosen? How do `sparse_statistical`, `phase_space_weighted`, `clustered` and `mixed` select levels and assign intensities? Which known β branches remain present? What exactly is the phase-space integral and positive intensity floor? |
+| **[γ-transition model — full implementation](GammaTransitionModels.md)** | How are γ destinations selected? What does the \(E_\gamma^3 e^{-E_\gamma/E_s}\) weight mean? How are branch counts and partial widths sampled, weak branches pruned, and γ-only-fed levels introduced? Which experimental γ intensities remain fixed? |
+| **[Construction, validation and cascade statistics](DecaySchemeValidation.md)** | In what order are β and γ patterns sampled? Which variations fail? How are γ multiplicity, γ-only cascade probability, and path counts calculated? How are the RNG seeds and output XMLs constructed? |
 
-## β population
+## Skeleton and preservation rules
 
-The number of levels receiving direct β feeding is chosen within configured fractions of all accessible skeleton levels. Originally beta-fed known levels remain fed if `keep_known_beta_fed_nonzero=true`, although their intensities may change. A positive floor in **percent** is applied to every nonzero branch before final normalization to 100%; direct zero-feeding remains zero. The approximate allowed phase-space prior is computed once per level, and is distinct from the relativistic spectral sampler in the response program.
+Known daughter levels within the configurable trusted energy region are retained; new effective levels occupy the centers of unoccupied higher-energy bins on the fixed nonuniform MTAS 354-bin energy grid. The first added level lies above the **highest retained known level**, even if the numerical trusted-energy cutoff is higher. Added levels have unknown spin/parity. The output XML includes only the daughter levels reachable in each variation, while `skeleton.csv` retains the full common skeleton.
 
-The `sparse_statistical`, `phase_space_weighted` and `clustered` strength models offer different ensemble priors. The `mixed` mode selects among them on each realization. These modes are assumptions chosen for synthetic variation; they do not imply experimental validation of that prior distribution.
+**β and γ are preserved differently.** With the supplied defaults, every originally positive trusted β branch remains positive but its numerical intensity may change. By contrast, the destinations **and branching probabilities** of the known γ transitions are frozen. Generated γ patterns apply the stochastic model described below.
 
-## γ paths
+## Model summary
 
-For each generated excited level, destinations lie at lower excitation energies. Weights use `E_gamma^3 exp(-E_gamma / energy_scale_kev)` and independent fluctuating widths. Outgoing branch number, fraction floor and minimum intensity limits apply to generated branches only. Fixed known γ transitions have priority and retain their original destinations/probabilities. Each complete sampled scheme is explicitly checked for finite total intensity and cascade-population constraints.
+- **β feeding:** `sparse_statistical` produces sparse, highly uneven feeding; `phase_space_weighted` adds an approximate allowed phase-space prior; `clustered` favors randomly chosen excitation-energy regions; `mixed` randomly chooses one of these for each attempted scheme. Selection and intensity generation are separate stages.
+- **γ generation:** `strength_weighted_sparse` is the only implemented γ model. It draws a limited number of downward destinations using a phenomenological transition-energy weight, then fluctuates relative widths using a shape-½ gamma distribution and prunes low-intensity branches. **It does not connect every level to every lower level:** ordinary generated destinations are restricted to directly β-fed lower levels and the ground state, with explicit exceptions for forced γ-only-fed levels and frozen experimental transitions.
+- **Constraints:** Positivity, branch floors, branch-count bounds, γ-only populations and complete first-γ branching for β-fed excited levels are validated. Failing samples are retried up to a bounded number of attempts. γ multiplicity is reported rather than constrained to a target distribution.
 
-Gamma-only-fed levels are beta-unfed excited states reached via γ cascades. The constraint on their total `max_cascade_fraction` concerns the probability of visiting **at least one**, not a sum of populations that double counts cascades. Existing frozen gamma-only levels override synthetic caps when configured.
+## Distinguish β feeding from the electron energy spectrum
 
-## Reproducibility and limitations
+The generator assigns \(b_i\), the integrated probability of populating daughter level \(i\) by β decay. The response program later samples the emitted electron's kinetic energy using a different calculation. See [β-electron spectra](BetaSpectra.md). The generator does not produce β-delayed neutron transitions, apply nuclear-spin selection rules to invented γ branches, or synthesize internal-conversion electrons.
 
-A master seed and variation index determine each scheme's RNG stream. Per-variation rejects are bounded by `max_attempts_per_variation`. No neutron branching or electron conversion sampling is generated; known conversion attributes may be preserved as metadata. Added levels have unknown spin/parity. All variations in one invocation share a skeleton, which is useful for aligned ML targets.
+**Practical references:** [GenerateDecaySchemes executable](../programs/GenerateDecaySchemes.md), [generate schemes guide](../guides/GenerateSchemes.md), and [configuration reference](../reference/Configurations.md).
