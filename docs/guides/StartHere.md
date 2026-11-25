@@ -10,7 +10,7 @@
 | Prepare input contaminants | [Contaminant inputs](Contaminants.md) | Event/histogram source files; 0/N sources |
 | Make compact physical/ML outputs | [Finalize outputs](FinalizePhysicalAndML.md) | Cleaner and preprocessor, or `scope=full` |
 | Generate decay-scheme matrix separately | [Matrix guide](CreateDecayMatrix.md) | Standalone program |
-| Start and submit a whole or partial project | [New campaign](NewCampaign.md) | v1.2.2 maintained workflow; 100k tested on v1.2.1 |
+| Start and submit a whole or partial project | [New campaign](NewCampaign.md) | v1.2.3 S+B patch on maintained workflow; 100k tested on v1.2.1 |
 | Work with older schema-2 benchmark directories | [Legacy campaign guide](CampaignToday.md) | Backward-compatible old run folders |
 | Inspect queue, job arrays, resource usage | [Check jobs](CheckingJobs.md) | `squeue`, `sacct`, campaign status |
 | Inspect results and numerical validation | [Inspect outputs](InspectOutputs.md), [Validation](ValidationWorkflow.md) | Real full-pipeline tests passed structurally |

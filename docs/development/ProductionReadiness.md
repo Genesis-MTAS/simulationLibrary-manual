@@ -1,6 +1,6 @@
 # Production readiness and remaining development
 
-Review snapshot November 22, 2026. The 100k campaign used v1.2.1; v1.2.2 is non-physics maintenance. No scientific C++ algorithms were modified.
+Review update November 24, 2026. The 100k campaign used v1.2.1; v1.2.2 was non-physics maintenance. **v1.2.3 intentionally modifies two scientific C++ files** for S+B zero-MTAS β-trigger inclusion; existing S+S, main and contaminants are regression-unchanged for the selected case. Side-by-side Global Common promotion is documented but not yet operator-confirmed in this manual draft.
 
 | Capability | Evidence / status |
 |---|---|
@@ -11,7 +11,8 @@ Review snapshot November 22, 2026. The 100k campaign used v1.2.1; v1.2.2 is non-
 | Maintenance source audit | 99 canonical files verified, 11 replacements / 4 added |
 | NERSC build/link | All six binaries built; runtime checks without LD_LIBRARY_PATH passed |
 | NERSC regression | 30 Python tests and preserved C++ modular tests passed |
-| Live v1.2.2 acceptance | Four-case real-library run submitted; final result pending (array 61769631) |
+| Live v1.2.2 acceptance | **PASS:** 4/4 full-scope cases validated using real Scratch library, with physical and ML ROOT outputs; array 61769631, 106 s allocated shard, 0.0294 node-h |
+| v1.2.3 S+B single-case regression | **PASS:** old and patched 92Y+92Sr physical ROOT comparison; 0.753500% S+B 3300 fraction unchanged, main/S+S/Sr92 exactly identical, S+B shape changed. **Separate v1.2.3 full project-controller acceptance not reported.** |
 | Fixed-reference scientific regression | Still distinct; not demonstrated by production validation |
 | Real interrupted-shard recovery | Synthetic retry/recovery tests passed; real deliberate interruption not documented |
 | Durable data backup | Historical software/tests/reports archived; full 100k dataset backup not confirmed |
@@ -29,6 +30,6 @@ Review snapshot November 22, 2026. The 100k campaign used v1.2.1; v1.2.2 is non-
 - Optional variation of known gamma intensities while retaining known destinations; currently trusted connections and intensities are frozen by the chosen preservation policy.
 - Fine-grained histogram creation vs saving controls and independent performance tuning. Do not change event statistics, zero handling, normalization or physics for speed.
 - Investigate stragglers and I/O, larger shards, node-local reuse or higher concurrency using separate controlled tests; none is a prerequisite to accepting the completed campaign.
-- Scientific comparisons to fixed references and experiment, plus archive/preservation of full campaign and response library. Confirm four-case maintained-release acceptance before declaring live v1.2.2 production verified.
+- Scientific comparisons to fixed references and experiment, plus archive/preservation of the full campaign and response library. Operational acceptance of v1.2.2 is complete; scientific fixed-reference validation remains separate. Setgid group inheritance should be configured before creating future shared projects (the small acceptance run inherited the personal group).
 
 See [worked campaign](../guides/Production100k.md), [performance](../guides/PerformanceAndStorage.md), [Installation](../guides/Installation.md), and [storage](../guides/StorageAndArchiving.md). The earlier readiness snapshot is retained at repository root for history.

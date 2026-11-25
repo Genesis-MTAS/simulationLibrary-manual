@@ -22,7 +22,7 @@ Fractions can be `fixed` or random uniformly selected between configured min/max
 
 ## Pileup physics and sampling
 
-`Pileup.ini` uses a crystal-resolved experimental background file in **MTASBKG1** fixed-record format, not the old histogram-based background. The pileup engine forms S+S and S+B pairs **after** processing individual crystal deposits. A secondary signal may be untriggered (`secondary_signal=ungated`) while the primary must satisfy the β gate.
+`Pileup.ini` uses a crystal-resolved experimental background file in **MTASBKG1** fixed-record format, not the old histogram-based background. The pileup engine forms S+S and S+B pairs **after** processing individual crystal deposits. A secondary signal may be untriggered (`secondary_signal=ungated`) while the primary must satisfy the β gate. **v1.2.3:** silicon-triggered events with exactly zero MTAS total may serve as the *first* S+B member, creating background-only MTAS deposits; they are not included in the main spectrum or either S+S reservoir. The source weighting for S+B accounts for all eligible β triggers, including zero-MTAS ones. The requested S+B `3300` mixture fraction remains unchanged; only the shape can differ.
 
 For 2D `3350`, each of the 18 IMO crystal energies is added crystal by crystal; this is not the old approximation that distributes a total noncentral energy arbitrarily among crystals. For `3351`, summed central response is used. The shared `min_2d_y_keV` applies to both 3350 and 3351 and to both pair classes; zeros still participate in the underlying energy sum. The result uses separately specified target counts for 1D/2D histograms and reports **attempt exposure and accepted-yield ratios**, rather than equating raw histogram entries with pair probabilities.
 

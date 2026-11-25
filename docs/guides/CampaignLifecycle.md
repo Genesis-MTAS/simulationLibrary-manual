@@ -1,6 +1,6 @@
 # Campaign lifecycle: editable project and frozen runs
 
-**Current implementation:** the v1.2.2 production controller supports this workflow. This is not merely a proposed design. Begin with the [hands-on new-campaign guide](NewCampaign.md); use this page for the conceptual lifecycle and data layout.
+**Current implementation:** the v1.2.3 production controller supports this workflow. This is not merely a proposed design. Begin with the [hands-on new-campaign guide](NewCampaign.md); use this page for the conceptual lifecycle and data layout.
 
 ## One scientific project, many frozen runs
 
@@ -34,7 +34,7 @@
         run_0002/                           # new freeze after a configuration edit
 ```
 
-The active binary library is on **Scratch**, not CFS; it is **referenced**, never copied into each campaign. New software stays under `/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2`; historical runs retain their original installation. Scratch is working storage subject to quota and purge; archive data to CFS or a separately chosen external machine after verified transfer.
+The active binary library is on **Scratch**, not CFS; it is **referenced**, never copied into each campaign. New software stays under `/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3`; historical runs retain their original installation. Scratch is working storage subject to quota and purge; archive data to CFS or a separately chosen external machine after verified transfer.
 
 ## Either configuration starting point is valid
 
@@ -54,7 +54,7 @@ Neither method leaves the new editable configuration linked to its source. Once 
 | `physical` | Generate response and final physical ROOT output; ML preprocessing not requested |
 | `full` | Generate response, clean physical, preprocess ML, validate, and remove the intermediate **only after validated completion** |
 
-Existing scheme-independent **standalone** tools are available for generating a response from one explicit `Decay.xml` or for sorting an existing `EventInfo` ROOT file. The v1.2.2 controller does **not** claim an independently supported `sort_existing_events` campaign scope, nor does a `response` scope imply automatic import of arbitrary existing XML collections. See [Simulate from XML](SimulateFromXML.md) and [Sort existing events](SortExistingEvents.md).
+Existing scheme-independent **standalone** tools are available for generating a response from one explicit `Decay.xml` or for sorting an existing `EventInfo` ROOT file. The v1.2.3 controller does **not** claim an independently supported `sort_existing_events` campaign scope, nor does a `response` scope imply automatic import of arbitrary existing XML collections. See [Simulate from XML](SimulateFromXML.md) and [Sort existing events](SortExistingEvents.md).
 
 ## Actual operator sequence
 

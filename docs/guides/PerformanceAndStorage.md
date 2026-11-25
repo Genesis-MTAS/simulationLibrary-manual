@@ -4,7 +4,7 @@ This guide distinguishes **case stage wall time**, **whole-node allocation elaps
 
 ## Completed production campaign (November 20–21, 2026)
 
-Full 92Y+92Sr, 1M events/case, 256 workers/node, 1,024 cases/shard (last shard 672). All 98 shards passed. Slurm elapsed time is measured from earliest start to latest end for each tranche, excluding waiting before first start. Node-hours are summed allocated task seconds/3600; each task uses one node. Code was v1.2.1 with the same physics as v1.2.2.
+Full 92Y+92Sr, 1M events/case, 256 workers/node, 1,024 cases/shard (last shard 672). All 98 shards passed. Slurm elapsed time is measured from earliest start to latest end for each tranche, excluding waiting before first start. Node-hours are summed allocated task seconds/3600; each task uses one node. Code was v1.2.1 with the same physics as v1.2.2. **v1.2.3 deliberately changes S+B shapes, so these throughput measurements have not been repeated for v1.2.3.**
 
 | Maximum nodes | Cases | Node-hours | Cases/node-hour | Makespan (min) | Mean shard (s) |
 |---:|---:|---:|---:|---:|---:|

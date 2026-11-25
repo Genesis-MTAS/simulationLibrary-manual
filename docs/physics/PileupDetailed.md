@@ -1,6 +1,6 @@
 # Event-resolved pileup: mathematics, zeros, reservoirs, 3350 and normalization
 
-**Implementation audited:** `src/sorting/SortEngine.cpp` (`ProcessDetectors`, `ProcessEvent`); `src/mixture/PileupEngine.cpp` (`ConsiderPrimary`, `ConsiderSecondary`, `DrawSS`, `DrawBackground`, `SampleFamily`, `Yield`); `src/mixture/MixtureRoot.cpp` (`RebinRawHistograms`, `WriteMixture`). This chapter describes the C++ implementation in the **uploaded November 2026 source archive**, which remains the scientific engine of the tested production workflow. The original code and the exact-crystal background reader should be consulted for any subsequent change.
+**Implementation audited:** `src/sorting/SortEngine.cpp` (`ProcessDetectors`, `ProcessEvent`); `src/mixture/PileupEngine.cpp` (`ConsiderPrimary`, `ConsiderSecondary`, `DrawSS`, `DrawBackground`, `SampleFamily`, `Yield`); `src/mixture/MixtureRoot.cpp` (`RebinRawHistograms`, `WriteMixture`). This chapter describes the v1.2.2 source baseline **with the v1.2.3 S+B zero-trigger patch** applied to `SortEngine.cpp` and `PileupEngine.cpp`. The other physics components remain as documented in the November source archive; this patch does not alter `MixtureRoot.cpp`.
 
 ## 1. What is being simulated?
 
@@ -20,7 +20,7 @@ After applying the detector conditions **individually to each decay** (calibrati
 T=C+\sum_{k=1}^{18} e_k.
 \]
 
-Here `e_1 ... e_18` denote all noncentral crystals, not a summed IMO channel. The record also has its own raw `SiTop` and `SiBottom` values, used for β gating *before* processing. The raw Monte Carlo library retains zero/no-deposit events to preserve response efficiency. The sorted event reservoirs contain **processed positive-total** events only.
+Here `e_1 ... e_18` denote all noncentral crystals, not a summed IMO channel. The record also has its own raw `SiTop` and `SiBottom` values, used for β gating *before* processing. The raw Monte Carlo library retains zero/no-deposit events to preserve response efficiency. The stored positive-event reservoirs contain **processed positive-total** events only. In v1.2.3, a separate *counter* records silicon-triggered, exact-zero-MTAS primaries eligible only for S+B. These are represented by a synthesized all-zero detector record on S+B draws, not by storing zero events in a reservoir.
 
 For a pair of events `a` and `b`:
 
@@ -37,7 +37,7 @@ There are three distinct uses of zero; they must not be conflated.
 
 | Zero | Where it occurs | Current treatment |
 |---|---|---|
-| **Entire event has `T=0`** | Monte Carlo source response, including inefficient detection | Such events are retained in raw response files but do **not** fill β-gated `3300`, enter the positive-total pileup reservoir or become a positive pileup pair. This distinction preserves efficiency in the source library. |
+| **Entire event has `T=0`** | Monte Carlo source response, including inefficient detection | Does **not** fill ordinary β-gated `3300` or enter either S+S reservoir. If it passed the silicon trigger, v1.2.3 counts it as a possible **S+B first event**, which produces background-only MTAS energy when paired with nonzero experimental background. Untriggered total-zero decays remain ineligible. |
 | **An individual crystal has `e_k=0` but `T>0`** | An otherwise accepted decay, or a member of an accidental pair | It participates **as exactly zero in the event-level sum**; zero is not broadened into a fake low-energy deposit. |
 | **A 2D histogram has Y below the output cutoff** | Raw or final `3350`/`3351` | Such entries are excluded when building the final 0–12 MeV physically weighted 2D spectra; the input energy was still used in computing the pair total and the individual crystal sums. |
 
@@ -66,7 +66,7 @@ All six combinations contribute their crystal energies to `T_{a+b}`. The cutoff 
 \max(\mathrm{SiTop},\mathrm{SiBottom})\geq E_{\beta,\mathrm{thr}}.
 \]
 
-For a triggered event, it processes the 19 detector energies. If the processed total `T<=0`, it does not fill the β-gated histograms. Otherwise:
+For a triggered event, it processes the 19 detector energies. If the processed total `T<=0`, it does not fill the ordinary β-gated histograms; **in v1.2.3 it is nevertheless registered with `ConsiderPrimary` for S+B-only zero counting**, then returns. Otherwise:
 
 ```cpp
 h3300.Fill(total);                 // exactly one entry per accepted event
@@ -88,9 +88,9 @@ Exactly the same Y≥10 keV rebinner applies to raw `3351`: central-zero entries
 
 ## 4. Building the primary and secondary reservoirs
 
-`PileupEngine` employs reservoir sampling for positive-MTAS processed events. For every event encountered, a fixed-size reservoir either appends it or randomly replaces an existing entry, avoiding storage of all million raw events. Both primary and secondary pools are maintained; a primary can also be considered for the secondary pool.
+`PileupEngine` employs reservoir sampling for positive-MTAS processed events. For every positive event encountered, a fixed-size reservoir either appends it or randomly replaces an existing entry, avoiding storage of all million raw events. Both positive-primary and secondary pools are maintained; a positive primary can also be considered for the secondary pool. Zero-total, β-triggered events are counted separately for S+B without reservoir storage.
 
-- **Primary pool:** β-gated, positive-total events.
+- **Positive primary pool:** β-gated, positive-total events. **S+B virtual-zero option (v1.2.3):** a β-gated processed event with exactly zero MTAS total increments an S+B-only counter; it is never added to the S+S positive primary pool.
 - **Secondary pool, `ungated`:** positive-total processed events may be included even if they did not pass the β trigger; a separate detector-smearing random stream prevents enabling secondary pileup from changing the baseline primary spectrum.
 - **Secondary pool, `triggered`:** only triggered primary events are admitted as secondaries.
 - **Multiple event sources:** source-specific reservoirs, with capacity approximately `reservoir_size / n_event_sources` (at least 1). **Histogram-mode contaminants cannot supply event samples.**
@@ -102,7 +102,7 @@ The reservoir is not a list of particle energies: every retained item carries th
 In the multi-source mixture, the primary source index for S+B is drawn with weights proportional to
 
 \[
-q_i^{\mathrm{SB}} \propto w_i N^{\mathrm{primary}}_i.
+q_i^{\mathrm{SB}} \propto w_i\left(N^{\mathrm{primary,+}}_i+N^{\mathrm{primary,0}}_i\right).
 \]
 
 The ordered S+S source pair `(i,j)` is drawn with weights
@@ -112,7 +112,21 @@ q_{ij}^{\mathrm{SS}}\propto
 w_iN_i^{\mathrm{primary}}\,w_jN_j^{\mathrm{secondary}}\,K_{ij}.
 \]
 
-`w_i` is the source's realized mixture scale, the `N` factors are numbers seen by the reservoirs (not the number currently stored), and `K_ij` accounts for overlap of the normalized source time curves. The engine samples **ordered** first/second sources, but later combines symmetric pairs for their time evolution because `λ_i+λ_j` is symmetric. See [Time evolution](TimeEvolutionDetailed.md).
+`w_i` is the source's realized mixture scale; `N^{primary,+}` counts β-triggered positive-total events, while `N^{primary,0}` counts β-triggered exact-zero-total events admitted **only for S+B**. For a selected S+B source, the zero-primary probability is `N^{primary,0}/(N^{primary,+}+N^{primary,0})`; a zero draw uses an all-zero 19-crystal signal. S+S weights continue to use only `N^{primary,+}`, with no change in reservoir selection. The `N` factors are total events *seen*, not reservoir storage capacity, and `K_ij` accounts for overlap of the normalized source time curves. The engine samples **ordered** first/second sources, but later combines symmetric pairs for their time evolution because `λ_i+λ_j` is symmetric. See [Time evolution](TimeEvolutionDetailed.md).
+
+### v1.2.3 zero-MTAS β-triggered S+B primary
+
+Only the S+B *first* member may be a β-triggered event with processed MTAS total `T=0`. The sorter calls `ConsiderPrimary` even for such events, but the pileup engine counts them separately and returns without adding them to positive-primary or secondary reservoirs. A zero S+B primary is synthesized as 19 exact zeros when selected; the randomly drawn experimental background supplies all MTAS energy in that pair. This matters especially for schemes with strong β ground-state feeding.
+
+The probability for source `i` to contribute a virtual-zero S+B primary is
+
+\[
+P_{i,0}^{\mathrm{SB}}=\frac{N_{i,0}^{\beta}}{N_{i,+}^{\beta}+N_{i,0}^{\beta}}.
+\]
+
+Source selection uses weights `w_i (N_{i,+}^β + N_{i,0}^β)`, replacing the previous positive-only S+B selection. The ordered S+S source-pair weighting and reservoir sampling are **unchanged**. S+B template shapes change, but the user-configured exclusive final S+B `3300` fraction is not increased. `3350` and `3351` integrals need not be individually conserved because they apply independent 2D Y cuts.
+
+The intermediate metadata `PileupConditions` records `zero_mtas_beta_triggered_primary_events_seen_for_sbkg` and `sbkg_zero_mtas_primary_draws`. Multi-source diagnostic counters include `sb_zero_primary_i` per source. These are sampling diagnostics, not an additional physical component in the final ROOT file.
 
 ## 5. How pileup 3350 is actually calculated
 
@@ -189,7 +203,7 @@ The compact `physical.root` retains precisely these elementary terms. `CleanPhys
 ## 8. Interpretation pitfalls and tests
 
 1. **Raw versus final zeros:** Raw sorted 3350 includes 18 zero-or-positive IMO entries per accepted event; cleaned physical 3350 excludes sub-10-keV Y entries.
-2. **No-deposit efficiency:** An original zero-total simulated event stays part of the source population in the library but does not become a visible MTAS event. Do not replace those zeros with smeared positive pulses.
+2. **No-deposit efficiency:** An original zero-total event stays part of the source population but does not become an ordinary visible MTAS event. A silicon-triggered, exact-zero-total event may act as the **S+B primary** and become background-only in the summed detector; it does not enter either S+S reservoir. Do not replace zeros with smeared positive pulses.
 3. **No histogram convolution shortcut:** Pileup 3350 comes from per-pair **crystal-by-crystal sums**, not by convolving raw 3350 histograms or spreading a total IMO energy among 18 crystals.
 4. **Beta trigger belongs to the primary:** An ungated secondary can contribute energy without independently firing the β detector.
 5. **2D counts are not event counts:** The 18 IMO entries per event and the nonzero-Y cuts mean 3350 is not the same normalization object as 3300.

@@ -1,6 +1,6 @@
 # Complete configuration reference — source review for production
 
-**Source of truth for the scientific INIs:** `src/apps/GenerateDecaySchemes.cpp`, `src/sorting/SortConfig.cpp`, `src/mixture/PileupEngine.cpp`, `src/mixture/MixtureConfig.cpp`, `src/preprocessing/EnergyBinning.cpp`, `src/apps/PreprocessResponse.cpp`, `scripts/campaign_driver.py`, and `config/defaults/*` from the uploaded November 18, 2026 canonical source archive. The packed-worker interface is taken from the separately delivered `MTAS_PackedWorkers_v1.zip` subsequently installed on Perlmutter. Do not assume this chapter describes code changes made *after* those snapshots.
+**Source of truth for the scientific INIs:** `src/apps/GenerateDecaySchemes.cpp`, `src/sorting/SortConfig.cpp`, `src/mixture/PileupEngine.cpp`, `src/mixture/MixtureConfig.cpp`, `src/preprocessing/EnergyBinning.cpp`, `src/apps/PreprocessResponse.cpp`, `scripts/campaign_driver.py`, and `config/defaults/*` from the uploaded November 18, 2026 canonical source archive. The packed-worker interface is taken from the separately delivered `MTAS_PackedWorkers_v1.zip` subsequently installed on Perlmutter. Most options are unchanged by the subsequent v1.2.3 S+B patch, which modifies `SortEngine.cpp` and `PileupEngine.cpp` only. See [PileupDetailed](../physics/PileupDetailed.md) for its zero-MTAS β-triggered S+B rule; the original sources listed here are a historical snapshot.
 
 **Defaults in the tables below are values in the supplied default/example INI**, not necessarily defaults of an executable invoked with no configuration. A blank means intentionally unspecified; `—` means not a parameter of that file. All paths and outputs must be reviewed for the actual isotope and campaign. Avoid modifying a campaign's frozen inputs after `init`; create a new campaign instead. **Canonical default INIs are read-only examples and may be the source for a new project's config, or the user may choose a previous approved project.** The new project must have its own copies, not live links to either source. See [configuration guide](../guides/ConfigureCampaign.md).
 
@@ -194,7 +194,7 @@ The driver accepts command-line flags (not an INI). Its init-only values are fro
 
 `config/defaults/campaign_commands.json` contains **argv lists**, not shell command strings. Its supported expansion placeholders include `{tree}`, `{python}`, `{decay_xml}`, `{binary_library}`, `{sort_ini}`, `{pileup_ini}`, `{mixture_ini}`, `{preprocess_ini}`, `{central_root}`, `{intermediate_root}`, `{physical_root}`, `{ml_root}`, `{response_seed}`, `{smearing_seed}`, `{conditions_seed}`, `{mixture_seed}`, `{events}`, `{batch}`, `{case}`. `pileup_seed` is applied to the per-case `Pileup.ini`. The default command templates invoke `GenerateResponse --direct-sort`, `CleanPhysicalResponse`, `PreprocessResponse --decay-xml`, and `validate_case.py`.
 
-**Current supported per-project workflow (production v1.2.2):** use `production_project.py create` to copy **six** INIs from canonical defaults or a previous project. Edit them under `PROJECT/config/`, run `preflight`, and `freeze`. The production controller uses the extended `campaign_driver.py init --config-dir PROJECT/config`, stages the reviewed INIs into the frozen run, and records their SHA-256 hashes. **The canonical defaults are not live configuration files.** The older schema-2-only `campaign_driver.py init` remains useful for legacy campaigns. See [New campaign](../guides/NewCampaign.md).
+**Current supported per-project workflow (production v1.2.3):** use `production_project.py create` to copy **six** INIs from canonical defaults or a previous project. Edit them under `PROJECT/config/`, run `preflight`, and `freeze`. The production controller uses the extended `campaign_driver.py init --config-dir PROJECT/config`, stages the reviewed INIs into the frozen run, and records their SHA-256 hashes. **The canonical defaults are not live configuration files.** The older schema-2-only `campaign_driver.py init` remains useful for legacy campaigns. See [New campaign](../guides/NewCampaign.md).
 
 
 ## 7. Legacy single-node packed-worker launcher
@@ -210,7 +210,7 @@ These are presently source constants / interface constraints, **not INI keys**: 
 
 For reviewing these options before any new large run, use the [configuration decision worksheet](ProductionConfigurationReview.md). For execution readiness, use the [100k operations guide](../guides/Production100k.md).
 
-## 9. `Campaign.ini` (new projects, production controller v1.2.2)
+## 9. `Campaign.ini` (new projects, production controller v1.2.3)
 
 The controller parses `PROJECT/config/Campaign.ini`, independently copied from the software's default or a previous campaign. Frozen runs preserve the exact reviewed bytes, plus independent copies of the five scientific INIs. Unknown keys/sections fail validation; **do not add arbitrary keys and expect them to be ignored.**
 

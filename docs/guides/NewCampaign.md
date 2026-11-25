@@ -1,6 +1,6 @@
 # Create, configure, freeze, and submit a campaign
 
-**This is the normal operator workflow for the installed production controller** `scripts/production_project.py` (**v1.2.2**, built and regression-tested on Perlmutter; the 100k campaign used v1.2.1). It supersedes the earlier schema-2 `campaign_driver.py init` instructions for *new projects*. The schema-2 interface remains supported for older campaigns, which must not be modified or migrated in place.
+**This is the normal operator workflow for the installed production controller** `scripts/production_project.py` (v1.2.3 S+B patch, verified by a single-case real-library replay; the unchanged controller previously passed its four-case v1.2.2 integration acceptance; the completed 100k campaign used v1.2.1). It supersedes the earlier schema-2 `campaign_driver.py init` instructions for *new projects*. The schema-2 interface remains supported for older campaigns, which must not be modified or migrated in place.
 
 ## The seven-step routine
 
@@ -15,13 +15,33 @@ The project can begin from **copied canonical defaults** or **copied configs fro
 
 ```bash
 mtas  # see Installation.md for shell initialization
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3
 export SCR=/pscratch/sd/m/michals/MTAS
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 export PROJECT="$SCR/production/MyCampaign"
 ```
 
-Use a unique project name and an existing parent directory. Run the controller from a writable location (`cd "$HOME"`); `umask 027` is recommended. If sharing with collaborators, configure group ownership and setgid before submission (see [Storage and archiving](StorageAndArchiving.md)). The shared **active** binary library resides under `$SCR/library/binary/{electrons,gammas}`; don't copy it into each project.
+Use a unique project name and an existing parent directory. Run the controller from a writable location (`cd "$HOME"`); `umask 027` is recommended. The shared **active** binary library resides under `$SCR/library/binary/{electrons,gammas}`; don't copy it into each project.
+
+### Sharing a new project with group `gen0018`
+
+For a **new** shared project, configure the group on the **parent directory before creating the project**. Group `gen0018` needs execute/traversal rights on higher-level path components (see [Storage and archiving](StorageAndArchiving.md)). Example with a dedicated shared parent, created once by a group member:
+
+```bash
+export SCR=/pscratch/sd/m/michals/MTAS
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3
+export SHARED_PARENT="$SCR/production/shared-gen0018"
+umask 027
+install -d -m 2750 -g gen0018 "$SHARED_PARENT"  # if not already set up
+stat -c '%A %U:%G %n' "$SHARED_PARENT"
+# New project path must NOT exist yet.
+export PROJECT="$SHARED_PARENT/MyNewCampaign"
+test ! -e "$PROJECT"
+python3 "$TREE/scripts/production_project.py" create --tree "$TREE" --project-dir "$PROJECT"
+stat -c '%A %U:%G %n' "$PROJECT" "$PROJECT/config" "$PROJECT/runs"
+```
+
+The setgid bit on directories propagates the `gen0018` group to new children; `umask 027` removes group write access for newly created files, but it **does not choose the group**, and `shutil.copy2` may preserve a template file's mode. Inspect the *small editable* new project before freeze; if sharing is required, correct the copied configuration file permissions before freezing. Check again after the first shard creates output files; expected ROOT outputs are `-rw-r----- user:gen0018` (and parent directories must be traversable). The original 100k campaign had this setup; the v1.2.2 four-case smoke-test instead inherited personal group `michals`. Do not change the completed 100k run to correct unrelated test-file permissions.
 
 ## 2. Create from defaults OR an established project
 

@@ -1,6 +1,6 @@
 # MTAS Simulation — technical and operations manual
 
-**Review draft v6 — November 22, 2026.** Scientific chapters retain source-reviewed physics; operations updated against v1.2.2 and completed 100k v1.2.1 campaign. New release build and regression checks passed; real four-case acceptance is pending. Independent fixed-reference scientific validation remains separate.
+**Review draft v6.2 — November 24, 2026.** New v1.2.3 release candidate changes only the handling of silicon-triggered, exactly zero-MTAS events as S+B primaries. The single-case real-data replay passed; this documentation includes installation steps, but successful promotion to Global Common must be verified separately on NERSC. Historical 100k v1.2.1 results and four-case v1.2.2 acceptance remain unchanged. Independent fixed-reference scientific validation remains separate.
 
 ## Choose what to read
 
@@ -49,12 +49,16 @@ Other valid entry points include `SortResponse` on a compatible existing `EventI
 
 ## Production evidence and outstanding checks
 
-All 100,000 cases and 98 shards passed; scheme index and 32 sampled ROOT outputs passed. See [completed campaign](guides/Production100k.md) and [scaling recommendations](guides/PerformanceAndStorage.md). The full dataset remains on Scratch; archive before purge. v1.2.2 source, build and regression tests passed; live acceptance is pending.
+All 100,000 cases and 98 shards passed; scheme index and 32 sampled ROOT outputs passed. See [completed campaign](guides/Production100k.md) and [scaling recommendations](guides/PerformanceAndStorage.md). The full dataset remains on Scratch; archive before purge. v1.2.2 source, NERSC build and regression tests, and real-library four-case acceptance passed. The four-case smoke test is not a comparable production throughput benchmark; see [Installation](guides/Installation.md).
 
 ## Documentation basis and development
 
-Source basis: v5.1 physics review, v1.2.2 maintenance source archive and operator-reported NERSC results through November 22. SOURCE_MANIFEST.csv records the earlier scientific review; RELEASE_SOURCE_MANIFEST.csv records the new source snapshot. Detailed implementation references cite actual C++ file/function names.
+Source basis: v5.1 physics review, v1.2.2 maintenance source archive, and the v1.2.3 two-file S+B patch with SHA-256 manifest and passed single-case replay reported November 24. SOURCE_MANIFEST.csv and RELEASE_SOURCE_MANIFEST.csv remain historical snapshots of their source versions; `SB_ZERO_TRIGGER_SOURCE_HASHES.json` records the two v1.2.3 source replacements. Detailed implementation references cite actual C++ functions.
 
 The current monoenergetic electron/gamma response library ends at **10 MeV**; the **12-MeV histogram axis** is an analysis range and does not extend the available particle library.
 
 The **first requested scientific feature in the subsequent development stage** is the Bateman parent–daughter activity model and grow-in of daughter contaminants. It is **not implemented** in this manual's source revision. See [Time evolution](physics/TimeEvolutionDetailed.md).
+
+## v1.2.3 S+B patch status (November 24, 2026)
+
+The new patch passes a one-case comparison against the completed 100k production run: ordinary main, S+S and 92Sr contaminant components are bin-identical; S+B shape is different; the S+B final `3300` fraction remains 0.753500%. β-triggered zero-MTAS events are included as virtual S+B primaries only. New Global Common installation and a fresh full-controller run are separate acceptance steps and should be recorded after they are actually completed. See [installation](guides/Installation.md) and [exact pileup physics](physics/PileupDetailed.md).

@@ -15,7 +15,7 @@ The three modes are **not interchangeable**. Do not feed an arbitrary raw tree o
 ## Shared inputs
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3
 export LIB=/pscratch/sd/m/michals/MTAS/library/binary
 export SCHEME=/absolute/path/to/scheme_000000/Decay.xml
 export OUT=/pscratch/sd/m/michals/MTAS/production/standalone_response_example

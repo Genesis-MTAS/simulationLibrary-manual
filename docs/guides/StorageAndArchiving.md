@@ -8,7 +8,8 @@ Our MTAS data layout separates **shared software**, **shared prepared inputs**, 
 /global/common/software/gen0018/mtas/
   root-env/                      shared ROOT/Python environment
   mtas-simulation/               preserved historical v1.2.1
-  mtas-simulation-v1.2.2/         maintained software for new campaigns
+  mtas-simulation-v1.2.2/         preserved maintenance release
+  mtas-simulation-v1.2.3/         patched software for new campaigns (after promotion)
 
 /global/cfs/cdirs/gen0018/MTAS/
   inputs/                        existing persistent/master input sources
@@ -85,13 +86,16 @@ Expected 1,891 per particle (3,782 total). Filename completeness is not a checks
     mtas_full_scaling_report.txt
 ```
 
-Historical patch archive, production-test archive and reports are confirmed. Preconsolidation and home-package cleanup instructions were supplied but no completion log was reported. Verify their presence before relying on them. Neither the full 100k run nor library was archived by these operations.
+Historical patch archive, production-test archive and reports are confirmed. The production acceptance run for v1.2.2 is stored on **Scratch**, not in this CFS archive tree. Preconsolidation and home-package cleanup instructions were supplied but no completion log was reported. Verify their presence before relying on them. Neither the full 100k run nor library was archived by these operations.
 
 To recover an archive, verify its SHA-256 if provided, list contents with `tar -tzf`, then extract into a new writable recovery directory using `tar -xzf ARCHIVE -C DEST --no-same-owner`. Do not extract over active software or frozen runs. Stop jobs before archiving, compare original and archived content, check for additional unarchived files and live dependencies, then explicitly delete only verified originals. Archive symlinks do not include external targets: preserve the referenced master inputs. CFS is not an independent disaster backup; HPSS and/or another site should hold critical copies.
 
 ## Read-only sharing with gen0018
 
 For the completed run, the owner configured group traversal on ancestors (group execute, no group write) and group read/traverse on the campaign tree. Setgid on new output parents gives group inheritance; v1.2.2 launchers set `umask 027`. Expected directory mode 2750, regular file mode 0640, group `gen0018`. Setgid does not change existing children. Set ownership and permissions on the intended project, run and output parents before submission; do not broaden permissions of unrelated directories. Verify with `namei -l` and `stat`, and ask a collaborator to open a representative file from their own account. Sampled production files had the correct group and read-only permissions; independent colleague confirmation was not reported. No recursive permission change is needed on the completed run. Older index verification rejected harmless ctime changes; v1.2.2 tolerates those while preserving SHA verification.
+
+**v1.2.2 live smoke-test lesson:** the new `Maintenance_Acceptance_v1_2_2` project produced `physical.root` and `ml.root` with mode `0640`, but group `michals` rather than `gen0018`. `umask 027` worked; group inheritance was not configured on that new project's parent. A read-only file is not readable by collaborators unless its **group** is one they belong to and all ancestor directories are traversable. For a shared new project, use a group-owned setgid parent **before** `production_project.py create`; inspect the resulting group/modes on `config`, `runs`, `cases` and outputs. The controller requires that the project itself not exist at creation time. Do not use a blanket recursive permission operation on historical frozen runs; such operations can change metadata used for provenance.
+
 
 ## Temporary outputs and peak storage
 

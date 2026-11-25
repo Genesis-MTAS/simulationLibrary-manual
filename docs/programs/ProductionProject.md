@@ -1,6 +1,6 @@
 # `production_project.py` and sharded execution
 
-**Installed version referenced:** v1.2.2 maintenance, based on v1.2.1 used for the completed 100k run. Orchestration only; physics algorithms unchanged.
+**New-project software version:** v1.2.3, carrying the isolated two-C++-file S+B zero-trigger change on the validated v1.2.2 controller. The controller/orchestration is unchanged. The completed 100k campaign used v1.2.1 and the separate four-case integration acceptance used v1.2.2.
 
 ## Responsibilities
 
@@ -49,6 +49,6 @@ PROJECT/runs/run_0001/cases/            per-case logs, stage statuses, ROOT outp
 PROJECT/runs/run_0001/reports/          campaign_metrics.py outputs
 ```
 
-Real production: all 100,000 cases passed with v1.2.1. v1.2.2 passed 30 Python tests and preserved modular tests on NERSC; live four-case acceptance is pending. Fixed-reference scientific validation remains separate.
+Real production: all 100,000 cases passed with v1.2.1. The deployed v1.2.2 release passed 30 Python tests, preserved modular C++ tests, and a four-case full-scope real-library campaign (Slurm array `61769631`, 4/4 cases validated). New smoke-test files inherited personal group `michals`; configure setgid parent `gen0018` for shared future projects. Fixed-reference scientific validation remains separate.
 
 Related [operator guide](../guides/NewCampaign.md), [job status](../guides/CheckingJobs.md), [recovery](../guides/Recovery.md), [production planning](../guides/Production100k.md).

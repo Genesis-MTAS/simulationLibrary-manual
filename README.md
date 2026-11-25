@@ -1,6 +1,6 @@
-# MTAS simulation manual — physics and operations v6
+# MTAS simulation manual — physics and operations v6.2
 
-Review draft, 22 November 2026. Documentation only; no scientific algorithm changes. Supersedes v5.1. The completed 100k v1.2.1 campaign and v1.2.2 maintenance build/test results are incorporated. Live four-case v1.2.2 acceptance remains pending. Start at [manual overview](docs/index.md), [installation](docs/guides/Installation.md), [new campaign](docs/guides/NewCampaign.md), [scaling](docs/guides/PerformanceAndStorage.md), [storage](docs/guides/StorageAndArchiving.md).
+Review draft v6.2, 24 November 2026. Includes the scoped v1.2.3 S+B zero-MTAS beta-trigger patch, its passed single-case replay against the completed v1.2.1 100k dataset, and a guarded new-directory deployment procedure. Supersedes v6.1; prior v1.2.1 and v1.2.2 observations remain historical, not v1.2.3 benchmarks. Start at [manual overview](docs/index.md), [installation](docs/guides/Installation.md), [new campaign](docs/guides/NewCampaign.md), [scaling](docs/guides/PerformanceAndStorage.md), [storage](docs/guides/StorageAndArchiving.md).
 
 ## Preview
 

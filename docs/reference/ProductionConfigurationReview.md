@@ -11,7 +11,7 @@ Choose one starting source and document it:
 - [ ] **Canonical defaults** were copied to this project's editable `config/` directory (not linked).
 - [ ] **Previously approved configuration** was copied from project/run: `__________` (configs only; no old status/results/metadata).
 
-After copying, **all** settings must be reviewed, even when unchanged. Record the approved configuration bytes/hashes with the new run. The maintained production controller v1.2.2 copies all six project INIs to an immutable run; freeze them and inspect `RUN/config/`. The separate historical schema-2 driver is retained for old campaigns. [Operator configuration guide](../guides/ConfigureCampaign.md).
+After copying, **all** settings must be reviewed, even when unchanged. Record the approved configuration bytes/hashes with the new run. The maintained production controller v1.2.3 copies all six project INIs to an immutable run; freeze them and inspect `RUN/config/`. The separate historical schema-2 driver is retained for old campaigns. [Operator configuration guide](../guides/ConfigureCampaign.md).
 
 ## A. Scientific inputs — decide before initialization
 
@@ -86,7 +86,7 @@ After copying, **all** settings must be reviewed, even when unchanged. Record th
 | Science gate | fixed-reference regression; all stage checks | [ ] 1024-case validation approved: ____ |
 | Operating manual gate | dry-run on clean environment by user | [ ] Reproduce independent launch/monitor/restart instructions: ____ |
 
-**Implementation note:** Production controller v1.2.2 retains independent `PROJECT/config` inputs and hash-frozen `RUN/config` snapshots. The 512-case acceptance and completed 100k run verified this route in real Slurm execution. Remaining science approval and fixed-reference regression are separate tasks.
+**Implementation note:** Production controller v1.2.3 retains independent `PROJECT/config` inputs and hash-frozen `RUN/config` snapshots. The 512-case acceptance and completed 100k run verified this route in real Slurm execution. Remaining science approval and fixed-reference regression are separate tasks.
 
 
 ## Configuration change discipline

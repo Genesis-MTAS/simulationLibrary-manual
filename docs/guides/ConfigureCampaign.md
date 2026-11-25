@@ -16,7 +16,7 @@
 ### Creation and review commands
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3
 export SCR=/pscratch/sd/m/michals/MTAS
 export PY=/global/common/software/gen0018/mtas/root-env/bin/python3
 export PROJECT="$SCR/production/MyCampaign"

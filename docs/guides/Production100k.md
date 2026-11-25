@@ -1,6 +1,6 @@
 # Completed 100,000-case production: worked example
 
-**Status:** all 100,000 92Y + 92Sr cases passed the v1.2.1 production controller; all 98 shards completed with exit code 0. This is a historical worked example, not an instruction to resubmit the existing run. For new campaigns use v1.2.2 and the [general guide](NewCampaign.md).
+**Status:** all 100,000 92Y + 92Sr cases passed the v1.2.1 production controller; all 98 shards completed with exit code 0. This is a historical worked example, not an instruction to resubmit the existing run. For new campaigns use v1.2.3 and the [general guide](NewCampaign.md); do not reinterpret this v1.2.1 dataset as having the patched S+B shape.
 
 ## Approved scientific and resource setup
 

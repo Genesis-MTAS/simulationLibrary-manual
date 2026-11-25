@@ -45,4 +45,7 @@ See [current readiness](../development/ProductionReadiness.md), [performance and
 
 ## 5. Reasonable final integrity acceptance
 
+**Maintained-release acceptance:** a separate four-case full run of v1.2.2 using the real library passed controller validation (4/4), generated both `physical.root` and `ml.root` per case, and passed the production smoke-test job. This is an *integration* check, not a 256-worker throughput measurement or a fixed-reference comparison. The group ownership of these smoke-test files was personal (`michals`) despite correct read-only mode bits; configure shared project parent permissions ahead of a new campaign.
+
+
 For the completed 100k dataset, all controller shards passed, zero failures/pending, successful Slurm tasks, full scheme-index verify, and a reproducible small sample of readable ROOTs were checked. Expected keys, finite histogram summaries and nonempty content are useful checks. The actual 32-file physical sample passed; 20 histograms each. These checks complement—not replace—the controller per-case validator. Do not reopen 100k ROOTs solely to repeat validated stages. A deeper scan or fixed-seed comparison is appropriate when investigating a discrepancy.

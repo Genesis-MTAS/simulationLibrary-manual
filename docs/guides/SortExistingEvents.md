@@ -11,7 +11,7 @@ An existing file with histograms **only** is not an `EventInfo` input and cannot
 ## Prepare a project-specific configuration
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3
 export PROJECT=/pscratch/sd/m/michals/MTAS/production/sort_existing_example
 mkdir -p "$PROJECT/config" "$PROJECT/outputs"
 cp "$TREE/config/defaults/SortResponse.ini" "$PROJECT/config/"

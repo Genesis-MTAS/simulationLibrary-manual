@@ -5,7 +5,7 @@ Use this guide **only** when the input ROOT file is a mixture intermediate conta
 ## Step 1: create a compact physical ROOT file
 
 ```bash
-export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.2
+export TREE=/global/common/software/gen0018/mtas/mtas-simulation-v1.2.3
 export CASE=/absolute/path/to/working/case
 mkdir -p "$CASE/outputs"
 "$TREE/bin/CleanPhysicalResponse" \
